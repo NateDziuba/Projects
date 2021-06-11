@@ -1,0 +1,48 @@
+---
+title: "Fractal_Reddit"
+output: html_document
+---
+
+##Make a data point inbetween some triangle, say at points (0,0), (1,0), and (0.5, 1)
+
+x <- runif(1, 0, 1)
+y <- runif(1, 0, 1)
+xy <- c(x, y)
+##Making the three data points
+
+p1 <- (0,0)
+p2 <- c(1, 0)
+p3 <- c(0.5,1)
+##Making the data frame and adding the generated random point and the other three data points
+data.frame(dp, stringsAsFactors = TRUE)
+dp <- data.frame()
+dp <- rbind(p1, p2, p3)
+colnames(dp) <- c("X","Y")
+dp <- rbind(dp, xy)
+## Plotting for sanity-check
+plot(dp)
+dp
+
+
+##The If Then Component
+##p1 #1 (1-2) ; p2 #2 (3-4); p3 #3 (5-6)
+i <- 1
+q <- 4
+n<-50000
+while (i<n+1)
+  {randomValue <- runif(1, 1, 6)
+  i <- i+1
+  if (randomValue <= 2 && i<n){
+    dp <- rbind(dp, (dp[q,] + dp[1, ])/2)
+    q <- q+1
+    } else if (randomValue <= 4 && i<n) {
+      dp <- rbind(dp, (dp[q,]+dp[2,])/2)
+      q <- q+1
+     } else if (randomValue <= 6 && i<n) {
+      dp <- rbind(dp, (dp[q,]+dp[3,])/2)
+      q<- q+1
+      print(i)
+      } else {plot(dp, pch = 20)}}
+
+    
+    
