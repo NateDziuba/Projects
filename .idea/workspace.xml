@@ -1,23 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="8478ccfb-7be4-4406-82b9-8151746706a9" name="Changes" comment="" />
+    <list default="true" id="4551ffee-8a78-45bd-91f3-584fdb7c5791" name="Changes" comment="Renamed folder to not be hidden.">
+      <change afterPath="$PROJECT_DIR$/DLS_Files/DLS Training DataAnalysis and TemplateGen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.DLS/DLS Training DataAnalysis and TemplateGen.py" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="origin/Development-01" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="2Xpb34yj6FuUENHTMsUI0LSZF3n" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4551ffee-8a78-45bd-91f3-584fdb7c5791" name="Changes" comment="" />
+      <created>1699328765503</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1699328765503</updated>
+    </task>
+    <task id="LOCAL-00001" summary="vcs comit and push">
+      <created>1699328852225</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1699328852225</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Commit directory.">
+      <created>1699329367990</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1699329367990</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Commit directory.">
+      <created>1699329398437</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1699329398437</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
-    <option name="oldMeFiltersMigrated" value="true" />
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="vcs comit and push" />
+    <MESSAGE value="Commit directory." />
+    <MESSAGE value="Renamed folder to not be hidden." />
+    <option name="LAST_COMMIT_MESSAGE" value="Renamed folder to not be hidden." />
   </component>
 </project>
