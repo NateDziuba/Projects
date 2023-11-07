@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4551ffee-8a78-45bd-91f3-584fdb7c5791" name="Changes" comment="Commit directory." />
+    <list default="true" id="4551ffee-8a78-45bd-91f3-584fdb7c5791" name="Changes" comment="Renamed folder to not be hidden.">
+      <change afterPath="$PROJECT_DIR$/DLS_Files/DLS Training DataAnalysis and TemplateGen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.DLS/DLS Training DataAnalysis and TemplateGen.py" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,7 +49,14 @@
       <option name="project" value="LOCAL" />
       <updated>1699329367990</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Commit directory.">
+      <created>1699329398437</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1699329398437</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -63,6 +73,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="vcs comit and push" />
     <MESSAGE value="Commit directory." />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit directory." />
+    <MESSAGE value="Renamed folder to not be hidden." />
+    <option name="LAST_COMMIT_MESSAGE" value="Renamed folder to not be hidden." />
   </component>
 </project>
