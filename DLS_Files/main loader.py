@@ -37,7 +37,7 @@ def FileSet():
         # While function loops until a csv file is selected or end has been input to go to the main menu.
         while True:
             print("Please select a CSV file for data analysis.\n")
-            request_pause2 = input("Please press any key to continue...\n")
+            input("Please press any key to continue...\n")
 
             root = tk.Tk()
             root.withdraw()
@@ -47,13 +47,14 @@ def FileSet():
             print("---- File has been selected, analyzing for file type.---- \n")
 
             if file_extension == "csv":  # Checks if selected file is a csv extension.
-                break
+                pass
             else:
                 print("A CSV file was not selected. Please select a csv file for analysis.\n")
                 request_pause = input("Please press any key to continue or type end to go to main menu.\n\n").lower()
                 if request_pause == "end":
                     pass
-    if file_path is not None:#Needed during analysis. File path selection is run automatically, because users...
+    if file_path is not None:
+        # Needed during analysis. File path selection is run automatically, because users...
         while True:
             print("Is this the correct file for data analysis?\n", file_path)
             request2 = input("Please press enter Yes or No. \n").lower()
@@ -71,14 +72,13 @@ def FileSet():
 
             if file_extension == "csv":  # Checks if selected file is a csv extension.
                 print("File is a csv extension. Accepting file path.\n")
-                break
+                pass
             else:
                 print("A CSV file was not selected. Please select a csv file for analysis.\n")
                 request_pause = input("Please press any key to continue or type end to go to main menu.\n\n").lower()
                 if request_pause == "end":
-                    break
-
-    return (file_path)
+                    pass
+    return file_path
 
 
 # Function determines if the current filepath contains the data of interest, if not it requests
@@ -101,9 +101,8 @@ def init_dataframe():
     print('\n\n Initializing Dataframe... Using filepath: \n\n')
     print(file_path)
     initdframe = pd.read_csv(file_path, encoding='cp1252')
-    print("Dataframe Initalized. Displaying full dataframe...")
-    initdframe
-    return (initdframe)
+    print("Dataframe Initalized. Displaying full dataframe...\n", initdframe)
+    return initdframe
 
 
 def sort_dataframe(dframe):
@@ -119,8 +118,16 @@ def sort_dataframe(dframe):
                         "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
                         "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
                         ]].copy()
-    return (df_sorted)
+    return df_sorted
 
+def filter_parameters():
+    baseline_lower = 0.99
+    baseline_upper = 1.01
+    sos = 25
+    amplitude_limit = 0.1
+    percent_acqs_unmarked = 70
+    relative_std = 5
+    replicate_size = 3
 
 def norm_init(dframe):
     """Generates the data filtered dataframe"""
@@ -142,25 +149,35 @@ def norm_init(dframe):
     print("df_filtered", df_filtered)
     print("df_NI", df_NI)
     print("\n\ndf_rsd", df_rsd)
-    return (df_rsd.loc[:, (['Sample', 'Dilution Factor', 'Normalized Intensity (Cnt/s)'], ["", 'mean'])])
+    return df_rsd.loc[:, (['Sample', 'Dilution Factor', 'Normalized Intensity (Cnt/s)'], ["", 'mean'])]
 
 
 # generate a list of non repeating sample names from the normalized intensity data that has been filtered
 
-def SelectSamples():
-    df = NormInt()
+def select_samples(dframe):
+    """ This function generates a list of non-repeating sample names and then returns this list. This list will
+    be used later to scan through another list to compare means to determine which dilutions produce a 2-fold reduction
+    in normalized intensity counts/sec."""
+
+    df = dframe
 
     sname = df['Sample'].tolist()
     snamer = []
     [snamer.append(i) for i in sname if i not in snamer]
-
-    print(snamer)
-
     for i in snamer:
         if df['Sample'] is i:
             print("True")
-    return (snamer)
+            return snamer
+        else:
+            print("Sample Name list needs to be remade.")
 
+def sample_scan(snamer, dframe):
+    sample_name_list = snamer
+    df = dframe
+
+
+
+    print("Sample Scan")
 
 def TemplateGenerator():
     print("Template Generator function activated.")
@@ -185,7 +202,11 @@ def main():
         elif request == 2:
             directorychange()
             df = init_dataframe()
-            filtered = norm_init(df)
+            df_sort = sort_dataframe(df)
+            filtered = norm_init(df_sort)
+            select_samples(filtered)
+
+
         elif request == 3:
             FileSet()
         elif request == 4:

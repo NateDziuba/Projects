@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="SCOPE_TYPE" value="3" />
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4551ffee-8a78-45bd-91f3-584fdb7c5791" name="Changes" comment="updated dataanalysis class.">
+    <list default="true" id="4551ffee-8a78-45bd-91f3-584fdb7c5791" name="Changes" comment="Data analysis updated.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DLS_Files/main loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/DLS_Files/main loader.py" afterDir="false" />
     </list>
@@ -28,6 +31,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="run.code.analysis.last.selected.profile" value="aDefault" />
   </component>
   <component name="RunManager">
     <configuration name="main loader" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -101,7 +105,21 @@
       <option name="project" value="LOCAL" />
       <updated>1699336088928</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="updated dataanalysis class.">
+      <created>1699499545328</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1699499545329</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Data analysis updated.">
+      <created>1699500468060</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1699500468060</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -122,6 +140,7 @@
     <MESSAGE value="Renamed folder to not be hidden." />
     <MESSAGE value="Main file for DLS script added to the repo." />
     <MESSAGE value="updated dataanalysis class." />
-    <option name="LAST_COMMIT_MESSAGE" value="updated dataanalysis class." />
+    <MESSAGE value="Data analysis updated." />
+    <option name="LAST_COMMIT_MESSAGE" value="Data analysis updated." />
   </component>
 </project>
