@@ -2,6 +2,7 @@
 
 import tkinter as tk
 from tkinter import filedialog
+
 import pandas as pd
 import numpy as np
 import os as os
@@ -9,7 +10,10 @@ import csv
 
 # ---- Global Variable Zone ----
 # Fil path selection storage location
-file_path = None # Used in FileSet() function to store the file path of the selected file.
+
+
+# Used in FileSet() function to store the file path of the selected file.
+file_path = None
 
 def main_menu():
     """Main menu to make selections from."""
@@ -52,10 +56,10 @@ def FileSet():
             print("Is this the correct file for data analysis?\n", file_path)
             request2 = input("Please press enter Yes or No. \n").lower()
 
-            if request2 is yes:
-                break
+            if request2 == "yes":
+                pass
 
-            if request2 is no:
+            if request2 == "no":
                 root = tk.Tk()
                 root.withdraw()
 
@@ -75,53 +79,50 @@ def FileSet():
     return(file_path)
 
 
-class DataAnalysis:
 
-    # initializing the class.
-    def __init__(self):
 
-        self.directorychange()
-        self.df_load = init_dataframe()
+# Function determines if the current filepath contains the data of interest, if not it requests
+# a direct filepath from the user to use for analysis.
 
-    ### Function determines if the current filepath contains the data of interest, if not it requests
-    ### a direct filepath from the user to use for analysis. .
-    def directorychange(self):
+
+def directorychange():
+    global file_path
+    if file_path is None:
         FileSet()
+    else:
+        pass
 
-    def init_dataframe(self):
-        global file_path
-        print('\n\n Initializing Dataframe... Using filepath: \n\n')
-        print(file_path)
-        initframe = pd.read_csv(file_path, encoding = 'cp1252')
-        print("\n\n Loaded Dataframe: \n")
-        print(self.initframe, "\n\n")
-        self.df_sorted = self.initdframe[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
-                        "Amplitude", "Baseline", "SOS", "%PD",
-                        "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
-                        "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
-                        "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
-                        "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
-                        "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
-                        "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
-                        ]].copy()
+#Initializes the data frame. Returns the dataframe.
+def init_dataframe():
+    global file_path
+    print('\n\n Initializing Dataframe... Using filepath: \n\n')
+    print(file_path)
+    initdframe = pd.read_csv(file_path, encoding = 'cp1252')
+    print("Dataframe Initalized. Displaying full dataframe...")
+    initdframe
+    return(initdframe)
 
-        return (self.df_sorted)
+def sort_dataframe(dframe):
+    print("\n\n Loaded Dataframe: \n")
+    print(dframe, "\n\n")
+    df_sorted = dframe[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
+                    "Amplitude", "Baseline", "SOS", "%PD",
+                    "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
+                    "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
+                    "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
+                    "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
+                    "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
+                    "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
+                    ]].copy()
+    return (self.df_sorted)
 
+def norm_init(dframe):
 
-    def FrameFilter(df_sorted):
-        df_filtered = df_sorted[(df_sorted['Baseline'] >= 0.99) & (df_sorted['Baseline'] <= 1.01) & (df_sorted['SOS'] <= 10)
-                                & (df_sorted['Amplitude'] >= 0.1) & (df_sorted['% Acqs Unmarked'] >= 70)].copy()
-        return (df_filtered)
-
-    @staticmethod
     def PRsd(x):
         return (x.std() / x.mean()) * 100
-
-
-def NormInt():
     # Variable for the filtered data from df_sorted
-    df_filtered = df_sorted[(df_sorted['Baseline'] >= 0.99) & (df_sorted['Baseline'] <= 1.01) & (df_sorted['SOS'] <= 25)
-                            & (df_sorted['Amplitude'] >= 0.1) & (df_sorted['% Acqs Unmarked'] >= 70)]
+    df_filtered = dframe[(dframe['Baseline'] >= 0.99) & (dframe['Baseline'] <= 1.01) & (dframe['SOS'] <= 25)
+                            & (dframe['Amplitude'] >= 0.1) & (dframe['% Acqs Unmarked'] >= 70)]
 
     # Sorted results  by sample, then dilution factor and calculated basic statistic values for the described values
     df_NI = df_filtered.groupby(['Sample', 'Dilution Factor']).agg(
@@ -174,7 +175,9 @@ def main():
         if request == 1:
             TemplateGenerator()
         elif request == 2:
-            DataAnalysis()
+            directorychange()
+            df = init_dataframe()
+            filtered = norm_init(df)
         elif request == 3:
             FileSet()
         elif request == 4:
