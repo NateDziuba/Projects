@@ -15,6 +15,7 @@ import csv
 # Used in FileSet() function to store the file path of the selected file.
 file_path = None
 
+
 def main_menu():
     """Main menu to make selections from."""
     print(
@@ -26,6 +27,7 @@ def main_menu():
         "3 - Select working file. \n"
         "4 - Printer working file filepath in terminal.\n\n"
     )
+
 
 def FileSet():
     """Function asks the user for a file path. This filepath is then stored as a global variable for future use."""
@@ -44,14 +46,14 @@ def FileSet():
             file_extension = file_path[-3:]
             print("---- File has been selected, analyzing for file type.---- \n")
 
-            if file_extension == "csv": # Checks if selected file is a csv extension.
+            if file_extension == "csv":  # Checks if selected file is a csv extension.
                 break
             else:
                 print("A CSV file was not selected. Please select a csv file for analysis.\n")
                 request_pause = input("Please press any key to continue or type end to go to main menu.\n\n").lower()
                 if request_pause == "end":
-                    break
-    if file_path is not None: #Needed during analysis. File path selection is run automatically, because users...
+                    pass
+    if file_path is not None:#Needed during analysis. File path selection is run automatically, because users...
         while True:
             print("Is this the correct file for data analysis?\n", file_path)
             request2 = input("Please press enter Yes or No. \n").lower()
@@ -67,7 +69,7 @@ def FileSet():
                 file_extension = file_path[-3:]
                 print("---- File has been selected, analyzing for file type.---- \n")
 
-            if file_extension == "csv": # Checks if selected file is a csv extension.
+            if file_extension == "csv":  # Checks if selected file is a csv extension.
                 print("File is a csv extension. Accepting file path.\n")
                 break
             else:
@@ -76,9 +78,7 @@ def FileSet():
                 if request_pause == "end":
                     break
 
-    return(file_path)
-
-
+    return (file_path)
 
 
 # Function determines if the current filepath contains the data of interest, if not it requests
@@ -86,43 +86,51 @@ def FileSet():
 
 
 def directorychange():
+    """Function runs the FileSet function, in case the use goes to data analysis without setting the csv file."""
     global file_path
     if file_path is None:
         FileSet()
     else:
         pass
 
-#Initializes the data frame. Returns the dataframe.
+
+# Initializes the data frame. Returns the dataframe.
 def init_dataframe():
+    """Initalizes the data frame that will be used later on in the analysis."""
     global file_path
     print('\n\n Initializing Dataframe... Using filepath: \n\n')
     print(file_path)
-    initdframe = pd.read_csv(file_path, encoding = 'cp1252')
+    initdframe = pd.read_csv(file_path, encoding='cp1252')
     print("Dataframe Initalized. Displaying full dataframe...")
     initdframe
-    return(initdframe)
+    return (initdframe)
+
 
 def sort_dataframe(dframe):
+    """Performs an initial sort of the dataframe into the core and required columns."""
     print("\n\n Loaded Dataframe: \n")
     print(dframe, "\n\n")
     df_sorted = dframe[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
-                    "Amplitude", "Baseline", "SOS", "%PD",
-                    "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
-                    "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
-                    "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
-                    "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
-                    "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
-                    "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
-                    ]].copy()
-    return (self.df_sorted)
+                        "Amplitude", "Baseline", "SOS", "%PD",
+                        "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
+                        "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
+                        "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
+                        "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
+                        "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
+                        "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
+                        ]].copy()
+    return (df_sorted)
+
 
 def norm_init(dframe):
+    """Generates the data filtered dataframe"""
 
     def PRsd(x):
         return (x.std() / x.mean()) * 100
+
     # Variable for the filtered data from df_sorted
     df_filtered = dframe[(dframe['Baseline'] >= 0.99) & (dframe['Baseline'] <= 1.01) & (dframe['SOS'] <= 25)
-                            & (dframe['Amplitude'] >= 0.1) & (dframe['% Acqs Unmarked'] >= 70)]
+                         & (dframe['Amplitude'] >= 0.1) & (dframe['% Acqs Unmarked'] >= 70)]
 
     # Sorted results  by sample, then dilution factor and calculated basic statistic values for the described values
     df_NI = df_filtered.groupby(['Sample', 'Dilution Factor']).agg(
@@ -153,6 +161,7 @@ def SelectSamples():
             print("True")
     return (snamer)
 
+
 def TemplateGenerator():
     print("Template Generator function activated.")
 
@@ -160,8 +169,7 @@ def TemplateGenerator():
 def main():
     """ The main function that prompts the user to make a selection of a task they would like to perform."""
 
-
-# Initiation of the prompt.
+    # Initiation of the prompt.
     print("Welcome to the DLS Python script, please select an option below.\n")
     # Loops to allow the user to select an option, and requires only int.
     while True:
