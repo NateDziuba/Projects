@@ -2,7 +2,7 @@
 
 import tkinter as tk
 from tkinter import filedialog
-
+from pathlib import Path
 import pandas as pd
 import numpy as np
 import os as os
@@ -46,21 +46,22 @@ def FileSet():
             file_extension = file_path[-3:]
             print("---- File has been selected, analyzing for file type.---- \n")
 
-            if file_extension == "csv":  # Checks if selected file is a csv extension.
-                pass
+            if Path(file_path).suffix == ".csv":  # Checks if selected file is a csv extension.
+                print("---File Type is CSV---\n")
+                break
             else:
                 print("A CSV file was not selected. Please select a csv file for analysis.\n")
                 request_pause = input("Please press any key to continue or type end to go to main menu.\n\n").lower()
                 if request_pause == "end":
                     pass
-    if file_path is not None:
+    else:
         # Needed during analysis. File path selection is run automatically, because users...
         while True:
             print("Is this the correct file for data analysis?\n", file_path)
             request2 = input("Please press enter Yes or No. \n").lower()
 
             if request2 == "yes":
-                pass
+                break
 
             if request2 == "no":
                 root = tk.Tk()
@@ -70,14 +71,14 @@ def FileSet():
                 file_extension = file_path[-3:]
                 print("---- File has been selected, analyzing for file type.---- \n")
 
-            if file_extension == "csv":  # Checks if selected file is a csv extension.
-                print("File is a csv extension. Accepting file path.\n")
-                pass
+            if Path(file_path).suffix == ".csv":  # Checks if selected file is a csv extension.
+                print("----File is a csv extension. Accepting file path.----\n")
+                break
             else:
-                print("A CSV file was not selected. Please select a csv file for analysis.\n")
-                request_pause = input("Please press any key to continue or type end to go to main menu.\n\n").lower()
+                print("----A CSV file was not selected. Please select a csv file for analysis.----\n")
+                request_pause = input("Please press any key to continue or type \"END\" to go to the main menu.\n\n").lower()
                 if request_pause == "end":
-                    pass
+                    break
     return file_path
 
 
@@ -98,17 +99,17 @@ def directorychange():
 def init_dataframe():
     """Initalizes the data frame that will be used later on in the analysis."""
     global file_path
-    print('\n\n Initializing Dataframe... Using filepath: \n\n')
-    print(file_path)
+    print('\n\n Initializing Dataframe... Using filepath: \n')
+    print(file_path, "\n")
     initdframe = pd.read_csv(file_path, encoding='cp1252')
-    print("Dataframe Initalized. Displaying full dataframe...\n", initdframe)
+    print("Dataframe created and loaded. Displaying full dataframe...\n", initdframe)
     return initdframe
 
 
 def sort_dataframe(dframe):
     """Performs an initial sort of the dataframe into the core and required columns."""
+    #TODO write an exception block for this range in case the user does not use dilution factors in the template
     print("\n\n Loaded Dataframe: \n")
-    print(dframe, "\n\n")
     df_sorted = dframe[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
                         "Amplitude", "Baseline", "SOS", "%PD",
                         "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
@@ -118,9 +119,12 @@ def sort_dataframe(dframe):
                         "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
                         "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
                         ]].copy()
+    print("df_sorted Printed:", df_sorted)
     return df_sorted
 
 def filter_parameters():
+    """place holder function that will be used o ask and store filter parameter variables during analysis"""
+    #TODO complete this function and a new menu selection for data analysis, probably make into a class.
     baseline_lower = 0.99
     baseline_upper = 1.01
     sos = 25
@@ -143,41 +147,33 @@ def norm_init(dframe):
     df_NI = df_filtered.groupby(['Sample', 'Dilution Factor']).agg(
         {'Normalized Intensity (Cnt/s)': ['size', 'mean', 'std', PRsd]}).reset_index().copy()
 
-    # %RSD needs to be 5% or lower and the size (the number of grouped dilution factors) needs to be 3.
+    # %RSD is set and needs to be at or lower than the provided value
+    # and the size (the number of grouped dilution factors) needs to be 3.
     df_rsd = df_NI[
-        (df_NI['Normalized Intensity (Cnt/s)', "PRsd"] <= 5) & (df_NI['Normalized Intensity (Cnt/s)', 'size'] == 3)]
-    print("df_filtered", df_filtered)
-    print("df_NI", df_NI)
+        (df_NI['Normalized Intensity (Cnt/s)', "PRsd"] <= 20) & (df_NI['Normalized Intensity (Cnt/s)', 'size'] == 3)]
+    #print("df_filtered", df_filtered)
+    #print("df_NI", df_NI)
     print("\n\ndf_rsd", df_rsd)
-    return df_rsd.loc[:, (['Sample', 'Dilution Factor', 'Normalized Intensity (Cnt/s)'], ["", 'mean'])]
+    #return df_rsd.loc[:, (['Sample', 'Dilution Factor', 'Normalized Intensity (Cnt/s)'], ["", 'mean'])]
 
-
-# generate a list of non repeating sample names from the normalized intensity data that has been filtered
-
-def select_samples(dframe):
-    """ This function generates a list of non-repeating sample names and then returns this list. This list will
-    be used later to scan through another list to compare means to determine which dilutions produce a 2-fold reduction
-    in normalized intensity counts/sec."""
-
-    df = dframe
-
-    sname = df['Sample'].tolist()
+    #Makes a list of lists of sample names and dilution factors that pass the above tests.
     snamer = []
-    [snamer.append(i) for i in sname if i not in snamer]
-    for i in snamer:
-        if df['Sample'] is i:
-            print("True")
-            return snamer
-        else:
-            print("Sample Name list needs to be remade.")
+    num_rsd = df_rsd.to_numpy()
+    [snamer.append([i[0], i[1]]) for i in num_rsd if [i[0], i[1]] not in snamer]
+    print(num_rsd)
+    print(snamer)
+    return snamer
 
-def sample_scan(snamer, dframe):
-    sample_name_list = snamer
+def select_samples(dframe, list):
+    """ This function uses the sorted data frame and the list of selected samples. The list is used to iterate through
+    the sorted dataframe and the selected samples are evaluated accordingly"""
+    sample_selection = list
     df = dframe
+    df_index = df.set_index(["Sample", "Dilution Factor"])
+    df_index.at[(val1, val2), "column"]
+    for i in sample_selection:
 
-
-
-    print("Sample Scan")
+    return
 
 def TemplateGenerator():
     print("Template Generator function activated.")
@@ -185,6 +181,8 @@ def TemplateGenerator():
 
 def main():
     """ The main function that prompts the user to make a selection of a task they would like to perform."""
+    global file_path
+    file_path = "/Users/natedziuba/Library/Mobile Documents/com~apple~CloudDocs/Computer Science/Python/Repos/DLS_Files/DLSTrainingRAW 2.csv"
 
     # Initiation of the prompt.
     print("Welcome to the DLS Python script, please select an option below.\n")
@@ -204,7 +202,7 @@ def main():
             df = init_dataframe()
             df_sort = sort_dataframe(df)
             filtered = norm_init(df_sort)
-            select_samples(filtered)
+            select_samples(df_sort, filtered)
 
 
         elif request == 3:
