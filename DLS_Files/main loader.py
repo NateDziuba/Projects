@@ -156,24 +156,59 @@ def norm_init(dframe):
     print("\n\ndf_rsd", df_rsd)
     #return df_rsd.loc[:, (['Sample', 'Dilution Factor', 'Normalized Intensity (Cnt/s)'], ["", 'mean'])]
 
-    #Makes a list of lists of sample names and dilution factors that pass the above tests.
+
+    return df_rsd
+
+def select_samples(dframe):
+    """ This function uses the sorted data frame and the list of selected samples. The list is used to iterate through
+    the sorted dataframe and the selected samples are evaluated accordingly. The dataframe that should be used as an
+    argument should be the norm int """
+    # Makes a list of lists of sample names and dilution factors that pass the above tests.
     snamer = []
-    num_rsd = df_rsd.to_numpy()
+    num_rsd = dframe.to_numpy()
     [snamer.append([i[0], i[1]]) for i in num_rsd if [i[0], i[1]] not in snamer]
     print(num_rsd)
     print(snamer)
-    return snamer
 
-def select_samples(dframe, list):
-    """ This function uses the sorted data frame and the list of selected samples. The list is used to iterate through
-    the sorted dataframe and the selected samples are evaluated accordingly"""
-    sample_selection = list
+    a = snamer
     df = dframe
     df_index = df.set_index(["Sample", "Dilution Factor"])
-    df_index.at[(val1, val2), "column"]
-    for i in sample_selection:
+    print ("Printing df_index: ", df_index)
+    verified_list = []
+    output_list = []
+    list_len = len(a)
 
-    return
+    pos1 = 0
+    pos2 = 1
+
+    # for loop initiates iteration over list length.
+    for i in range(list_len):
+        if pos2 < list_len:  # Check to prevent an index error.
+            print("\n Printing a[pos1][0]", a[pos1][0])
+            if a[pos1][0] == a[pos2][0]:  # checks it the sample names are the same
+                fold = a[pos1][1] / a[pos2][1]
+                print("\nPrinting fold: ", fold)
+                if fold == 0.5 or fold == 2:  # Confirms if the dilution factor fold difference are correct and begins extracting normalized intensity counts.
+                    comparison1 = df_index.at[(a[pos1][0], a[pos1][1]), df_index["Normalized Intensity (Cnt/s)"]["mean"]]
+                    print("\nPrinting Comparison1: ", comparison1)
+                    comparison2 = df_index.at[(a[pos2][0], a[pos2][1]), "Normalized Intensity (Cnt/s)"]
+                    comp_fold = int(comparison1 / comparison2)
+                    print("\nPrinting Comparison1: ", comparison1)
+                    if 1.5 <= comp_fold <= 2.5:  # if norm intensity fold difference is within 2 +/- 25%, append to a new list
+                        verified_list.append([a[pos1][0], a[pos1][1], comparison1])
+                        verified_list.append([a[pos2][0], a[pos2][1], comparison2])
+            pos1 += 1
+            pos2 += 1
+        else:
+            print("List scan finished, generating master list.")
+            # A new list is generated without repeats.
+            [output_list.append(i) for i in verified_list if i not in output_list]
+
+
+    print('\n Printing Output List: ', output_list)
+    print("\n Printing initial list: ", a)
+    print("\n Prinint verified list: ", verified_list)
+    return output_list
 
 def TemplateGenerator():
     print("Template Generator function activated.")
@@ -202,7 +237,7 @@ def main():
             df = init_dataframe()
             df_sort = sort_dataframe(df)
             filtered = norm_init(df_sort)
-            select_samples(df_sort, filtered)
+            select_samples(filtered)
 
 
         elif request == 3:
