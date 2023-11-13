@@ -7,8 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4551ffee-8a78-45bd-91f3-584fdb7c5791" name="Changes" comment="Data analysis updated. Updated to pulling the norm int for analysis.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="4551ffee-8a78-45bd-91f3-584fdb7c5791" name="Changes" comment="Norm Int analysis competed, list generated.">
       <change beforePath="$PROJECT_DIR$/DLS_Files/main loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/DLS_Files/main loader.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -208,7 +207,14 @@
       <option name="project" value="LOCAL" />
       <updated>1699820315342</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Norm Int analysis competed, list generated.">
+      <created>1699835515917</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1699835515917</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -231,7 +237,8 @@
     <MESSAGE value="updated dataanalysis class." />
     <MESSAGE value="Data analysis updated." />
     <MESSAGE value="Data analysis updated. Updated to pulling the norm int for analysis." />
-    <option name="LAST_COMMIT_MESSAGE" value="Data analysis updated. Updated to pulling the norm int for analysis." />
+    <MESSAGE value="Norm Int analysis competed, list generated." />
+    <option name="LAST_COMMIT_MESSAGE" value="Norm Int analysis competed, list generated." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

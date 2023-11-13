@@ -187,11 +187,10 @@ def select_samples(dframe):
             if a[pos1][0] == a[pos2][0]:  # checks it the sample names are the same
                 fold = a[pos1][1] / a[pos2][1]
                 if fold == 0.5 or fold == 2:  # Confirms if the dilution factor fold difference are correct and begins extracting normalized intensity counts.
-                    comparison1 = df_index.loc[(a[pos1][0], a[pos1][1])][("Normalized Intensity (Cnts/s)", "mean")]
-                    print("Comparison 1 printing: ", comparison1)
+                    comparison1 = df_index.loc[(a[pos1][0], a[pos1][1])][1]
                     #The above line of code returns the sample and dilution factor index values, and then the position of the remaining column.
                     #excluding a column value for norm. Int. appears to be syntactic sugar to including a ':'(splice value).
-                    comparison2 = df_index.loc[(a[pos2][0], a[pos2][1])][0]
+                    comparison2 = df_index.loc[(a[pos2][0], a[pos2][1])][1]
                     comp_fold = comparison1/comparison2
                     if 1.5 <= comp_fold <= 2.5:  # if norm intensity fold difference is within 2 +/- 25%, append to a new list
                         verified_list.append([a[pos1][0], a[pos1][1], comparison1])
