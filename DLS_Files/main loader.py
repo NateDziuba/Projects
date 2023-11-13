@@ -184,30 +184,29 @@ def select_samples(dframe):
     # for loop initiates iteration over list length.
     for i in range(list_len):
         if pos2 < list_len:  # Check to prevent an index error.
-            print("\n Printing a[pos1][0]", a[pos1][0])
             if a[pos1][0] == a[pos2][0]:  # checks it the sample names are the same
                 fold = a[pos1][1] / a[pos2][1]
-                print("\nPrinting fold: ", fold)
                 if fold == 0.5 or fold == 2:  # Confirms if the dilution factor fold difference are correct and begins extracting normalized intensity counts.
-                    comparison1 = df_index.at[(a[pos1][0], a[pos1][1]), df_index["Normalized Intensity (Cnt/s)"]["mean"]]
-                    print("\nPrinting Comparison1: ", comparison1)
-                    comparison2 = df_index.at[(a[pos2][0], a[pos2][1]), "Normalized Intensity (Cnt/s)"]
-                    comp_fold = int(comparison1 / comparison2)
-                    print("\nPrinting Comparison1: ", comparison1)
+                    comparison1 = df_index.loc[(a[pos1][0], a[pos1][1])][("Normalized Intensity (Cnts/s)", "mean")]
+                    print("Comparison 1 printing: ", comparison1)
+                    #The above line of code returns the sample and dilution factor index values, and then the position of the remaining column.
+                    #excluding a column value for norm. Int. appears to be syntactic sugar to including a ':'(splice value).
+                    comparison2 = df_index.loc[(a[pos2][0], a[pos2][1])][0]
+                    comp_fold = comparison1/comparison2
                     if 1.5 <= comp_fold <= 2.5:  # if norm intensity fold difference is within 2 +/- 25%, append to a new list
                         verified_list.append([a[pos1][0], a[pos1][1], comparison1])
                         verified_list.append([a[pos2][0], a[pos2][1], comparison2])
             pos1 += 1
             pos2 += 1
         else:
-            print("List scan finished, generating master list.")
+            print("\nList scan finished, generating master list.")
             # A new list is generated without repeats.
             [output_list.append(i) for i in verified_list if i not in output_list]
 
 
     print('\n Printing Output List: ', output_list)
     print("\n Printing initial list: ", a)
-    print("\n Prinint verified list: ", verified_list)
+    print("\n Prining verified list: ", verified_list, "\n\n")
     return output_list
 
 def TemplateGenerator():
