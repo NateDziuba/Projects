@@ -21,7 +21,7 @@ def main_menu():
     print(
         "Main Menu\n"
         "---------\n"
-        "0 - Terminate Script.\n"
+        "0 - Terminate Program.\n"
         "1 - Template Generation.\n"
         "2 - Data Analysis.\n"
         "3 - Select working file. \n"
@@ -208,6 +208,18 @@ def select_samples(dframe):
     print("\n Prining verified list: ", verified_list, "\n\n")
     return output_list
 
+def cum_reg_report(list, dframe):
+    """Function takes a list of lists that contain the sample name, dilution factor, and normalized intensity
+    that have passed assay acceptance criteria. This list is used to pull cummulant or regularization values and
+    generates basic statistics on it.The second arg is the sorted dataframe."""
+
+    accepted_values = list
+    df_sorted = dframe
+
+
+
+
+
 def TemplateGenerator():
     print("Template Generator function activated.")
 
@@ -243,7 +255,7 @@ def main():
         elif request == 4:
             print("The filepath is: ", file_path, "\n\n")
         elif request == 0:
-            print("Thank-you for using the DLS python script.\n\n")
+            print("Thank-you for using the DLS python program.\n\n")
             break
         else:
             print("Invalid choice. \n")
