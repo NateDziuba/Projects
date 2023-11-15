@@ -25,10 +25,10 @@ def main_menu():
         "1 - Template Generation.\n"
         "2 - Data Analysis.\n"
         "3 - Select working file. \n"
-        "4 - Printer working file filepath in terminal.\n\n"
+        "4 - Print working file-filepath in terminal.\n\n"
     )
 
-
+#TODO make the Fileset as a class so it can also return the folder to store data in
 def FileSet():
     """Function asks the user for a file path. This filepath is then stored as a global variable for future use."""
     global file_path
@@ -109,7 +109,7 @@ def init_dataframe():
 def sort_dataframe(dframe):
     """Performs an initial sort of the dataframe into the core and required columns."""
     #TODO write an exception block for this range in case the user does not use dilution factors in the template
-    print("\n\n Loaded Dataframe: \n")
+    print("\n\n Sort Dataframe initiated...\n")
     df_sorted = dframe[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
                         "Amplitude", "Baseline", "SOS", "%PD",
                         "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
@@ -118,8 +118,8 @@ def sort_dataframe(dframe):
                         "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
                         "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
                         "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
-                        ]].copy()
-    print("df_sorted Printed:", df_sorted)
+                        ]]
+    print("Dataframe has been sorted, displaying: \n", df_sorted)
     return df_sorted
 
 def filter_parameters():
@@ -138,7 +138,7 @@ def norm_init(dframe):
 
     def PRsd(x):
         return (x.std() / x.mean()) * 100
-
+    print("\n Initiatiing parameter filter:...\n\n")
     # Variable for the filtered data from df_sorted
     df_filtered = dframe[(dframe['Baseline'] >= 0.99) & (dframe['Baseline'] <= 1.01) & (dframe['SOS'] <= 25)
                          & (dframe['Amplitude'] >= 0.1) & (dframe['% Acqs Unmarked'] >= 70)]
@@ -153,7 +153,7 @@ def norm_init(dframe):
         (df_NI['Normalized Intensity (Cnt/s)', "PRsd"] <= 20) & (df_NI['Normalized Intensity (Cnt/s)', 'size'] == 3)]
     #print("df_filtered", df_filtered)
     #print("df_NI", df_NI)
-    print("\n\ndf_rsd", df_rsd)
+    print("\n\n Filtered and grouped dataset finished, loading df_rsd: ....\n\n", df_rsd)
     #return df_rsd.loc[:, (['Sample', 'Dilution Factor', 'Normalized Intensity (Cnt/s)'], ["", 'mean'])]
 
 
@@ -163,7 +163,7 @@ def select_samples(dframe):
     """ This function uses the sorted data frame and the list of selected samples. The list is used to iterate through
     the sorted dataframe and the selected samples are evaluated accordingly. The dataframe that should be used as an
     argument should be the norm int """
-    # Makes a list of lists of sample names and dilution factors that pass the above tests.
+    # Makes a list of lists of sample names and dilution factors that pass the above tests, exports into numpy.
     snamer = []
     num_rsd = dframe.to_numpy()
     [snamer.append([i[0], i[1]]) for i in num_rsd if [i[0], i[1]] not in snamer]
@@ -211,13 +211,46 @@ def select_samples(dframe):
 def cum_reg_report(list, dframe):
     """Function takes a list of lists that contain the sample name, dilution factor, and normalized intensity
     that have passed assay acceptance criteria. This list is used to pull cummulant or regularization values and
-    generates basic statistics on it.The second arg is the sorted dataframe."""
+    generates basic statistics on it.The second arg is the sorted dataframe. Use the verified list from the 
+    select samples function. Use the sorted data frame from sort_dataframe function."""
 
+    
+    foldersave = 'C:/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files'
     accepted_values = list
     df_sorted = dframe
-
-
-
+    df_index = df_sorted.set_index(["Sample", "Dilution Factor"], drop=True)
+    dfidx_sort = df_index.sort_index()
+    
+    for i in range(len(accepted_values)):
+        idx1 = accepted_values[i][0] #is sample name
+        idx2 = accepted_values[i][1] #is dilution factor
+        slct_df = dfidx_sort.loc[(idx1, idx2), :]
+        if slct_df.mean(axis=0)["%PD"] <= 15.0:
+            #Save the data, the triplicate rows and the descriptives, to an excel sheet 
+            with pd.ExcelWriter(foldersave, engine=xlsxwriter) as writer:
+                cume = slct_df[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
+                                    "Amplitude", "Baseline", "SOS", "%PD",
+                                    "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
+                                    ]]
+                cume_stat = cume.describe()
+                cume.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
+                cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
+        else:
+            with pd.ExcelWriter(foldersave, engine=xlsxwriter) as writer:
+                cume = slct_df[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
+                                    "Amplitude", "Baseline", "SOS", "%PD",
+                                    "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
+                                    "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
+                                    "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
+                                    "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
+                                    "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
+                                    "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
+                                    ]]
+                cume.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
+                cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
+    
+        print(slct_df)
+        print(slct_df.describe())
 
 
 def TemplateGenerator():
@@ -247,13 +280,13 @@ def main():
             df = init_dataframe()
             df_sort = sort_dataframe(df)
             filtered = norm_init(df_sort)
-            select_samples(filtered)
-
+            verified_list = select_samples(filtered)
+            cum_reg_report(verified_list, df_sort)
 
         elif request == 3:
             FileSet()
         elif request == 4:
-            print("The filepath is: ", file_path, "\n\n")
+            print("The filepath is: \n", file_path, "\n\n")
         elif request == 0:
             print("Thank-you for using the DLS python program.\n\n")
             break
