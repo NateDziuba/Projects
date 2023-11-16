@@ -236,7 +236,21 @@
       <option name="project" value="LOCAL" />
       <updated>1700107564216</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Updated main loader. &#10;&#10;Worked on consolidating the template generater function for the main loader. Finihed HeaderGen, Wells. Continue with samplename.">
+      <created>1700107631388</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1700107631388</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Updated main loader. &#10;&#10;Worked on consolidating the template generater function for the main loader. Finihed HeaderGen, Wells. Continue with samplename.">
+      <created>1700107958695</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1700107958695</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -250,7 +264,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="Development-01" />
+                        <option value="main" />
                       </list>
                     </value>
                   </entry>
