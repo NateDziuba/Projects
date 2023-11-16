@@ -118,7 +118,7 @@ def sort_dataframe(dframe):
                         "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
                         "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
                         "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
-                        ]].copy()
+                        ]]
     print("df_sorted Printed:", df_sorted)
     return df_sorted
 
@@ -172,8 +172,8 @@ def select_samples(dframe):
 
     a = snamer
     df = dframe
-    df_index = df.set_index(["Sample", "Dilution Factor"])
-    print ("Printing df_index: ", df_index)
+    df_index = df.set_index(["Sample", "Dilution Factor"], inplace=True)
+    print ("Printing df: ", df)
     verified_list = []
     output_list = []
     list_len = len(a)
@@ -187,10 +187,10 @@ def select_samples(dframe):
             if a[pos1][0] == a[pos2][0]:  # checks it the sample names are the same
                 fold = a[pos1][1] / a[pos2][1]
                 if fold == 0.5 or fold == 2:  # Confirms if the dilution factor fold difference are correct and begins extracting normalized intensity counts.
-                    comparison1 = df_index.loc[(a[pos1][0], a[pos1][1])][1]
+                    comparison1 = df.loc[(a[pos1][0], a[pos1][1])][1]
                     #The above line of code returns the sample and dilution factor index values, and then the position of the remaining column.
                     #excluding a column value for norm. Int. appears to be syntactic sugar to including a ':'(splice value).
-                    comparison2 = df_index.loc[(a[pos2][0], a[pos2][1])][1]
+                    comparison2 = df.loc[(a[pos2][0], a[pos2][1])][1]
                     comp_fold = comparison1/comparison2
                     if 1.5 <= comp_fold <= 2.5:  # if norm intensity fold difference is within 2 +/- 25%, append to a new list
                         verified_list.append([a[pos1][0], a[pos1][1], comparison1])
@@ -210,11 +210,28 @@ def select_samples(dframe):
 
 def cum_reg_report(list, dframe):
     """Function takes a list of lists that contain the sample name, dilution factor, and normalized intensity
-    that have passed assay acceptance criteria. This list is used to pull cummulant or regularization values and
+    that have passed assay acceptance criteria. This list is used to pull cumulant or regularization values and
     generates basic statistics on it.The second arg is the sorted dataframe."""
 
+    #The list contains the [sample name, dilution factor, and norm intensity] for all samples that passed
+    #the assay acceptance criteria.
     accepted_values = list
-    df_sorted = dframe
+    #reorganizing the dataframe to useful components needed for the analysis.
+    df_sorted = dframe[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
+                         "%PD",
+                        "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
+                        "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
+                        "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
+                        "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
+                        "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
+                        ]]
+    df_indexed = df_sorted.set_index(["Sample", "Dilution Factor"], inplace=True)
+    report_list = []
+    print("Testing df dorted with a set index")
+    print(df_sorted)
+
+
+
 
 
 
@@ -247,8 +264,8 @@ def main():
             df = init_dataframe()
             df_sort = sort_dataframe(df)
             filtered = norm_init(df_sort)
-            select_samples(filtered)
-
+            accepted_list = select_samples(filtered)
+            cum_reg_report(accepted_list, df_sort)
 
         elif request == 3:
             FileSet()

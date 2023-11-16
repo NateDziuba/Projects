@@ -106,19 +106,10 @@ def SelectSamples():
 """ Template Generator"""
 
 ###Global Variables
-
-#Sample plate size
-wells = 384
-
-#generates well label for dataframe
-well_label = []
-
-#Generate list for default headers
+#Generate list for default headers that are required
 default_headers = ["Well", "Sample", "Dilution Factor"]
-template_headers = []
 
-#Sample Names desired 
-global samplename
+#Sample Names desired
 samplename = []
 
 #Sample list for dataframe
@@ -145,16 +136,20 @@ def HeadersGenerate(): #Generate headers if needed
     print ("The currently defined headers: \n")
     [print (i) for i in default_headers]
     print("\n")
-    request = input("Are additional headers requred? Answer Yes or No.\n Response: ").lower()
+    request = input("Are additional headers required? Answer Yes or No.\n Response: ").lower()
+    template_headers = default_headers
     if request == "yes":
         new_headers = [x.strip() for x in list(input("Add headers separated with commas ','.\n Response: ").split(','))]
         ##TODO added mechanism to append default headers to the template headers list##
         for i in new_headers:
             template_headers.append(i)
-    else:print("All necessary headers are present.\n")       
+    else:print("All necessary headers are present.\n")
+    return template_headers
         
 def Wells():#define the number of wells to be used.
     wells = 384
+    #  well label variable for dataframe
+    well_label = []
     request = input("Default plate size is 384-well, do you wish to change? \n Response: ")
     if request == 'yes':
         well_check = False
@@ -171,9 +166,14 @@ def Wells():#define the number of wells to be used.
     #appending the well number to the well letter and creating a list in well.label variable. 
     well_list = []
     for i in range(len(samplename)):
-        for j in range(24):
+        if wells = 384:#checking number of columns to assign well count.
+            plate_col = 24
+        elif wells = 96:
+            plate_col = 12
+        for j in range(plate_col):
             number = str(j+1)
             well_label.append(alphabet[i]+number)
+    return well_list
         
         
     
