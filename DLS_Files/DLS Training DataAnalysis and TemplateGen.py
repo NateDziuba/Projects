@@ -178,6 +178,7 @@ def Wells():#define the number of wells to be used.
         
     
 def SampleName():
+    #TODO remove global names and insert into the function.
     global samplename
     global samplelist
     print("\nCurrent sample names in the script: ", samplename)
