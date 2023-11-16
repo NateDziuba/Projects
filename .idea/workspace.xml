@@ -7,11 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4551ffee-8a78-45bd-91f3-584fdb7c5791" name="Changes" comment="Started generating cu and reg report.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DLS_Files/DLS Training DataAnalysis and TemplateGen.py" beforeDir="false" afterPath="$PROJECT_DIR$/DLS_Files/DLS Training DataAnalysis and TemplateGen.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DLS_Files/main loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/DLS_Files/main loader.py" afterDir="false" />
-    </list>
+    <list default="true" id="4551ffee-8a78-45bd-91f3-584fdb7c5791" name="Changes" comment="Updated main loader. &#10;&#10;Worked on consolidating the template generater function for the main loader. Finihed HeaderGen, Wells. Continue with samplename." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -233,7 +229,14 @@
       <option name="project" value="LOCAL" />
       <updated>1699844580363</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Updated main loader. &#10;&#10;Worked on consolidating the template generater function for the main loader. Finihed HeaderGen, Wells. Continue with samplename.">
+      <created>1700107564216</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1700107564216</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -270,7 +273,8 @@
     <MESSAGE value="Data analysis updated. Updated to pulling the norm int for analysis." />
     <MESSAGE value="Norm Int analysis competed, list generated." />
     <MESSAGE value="Started generating cu and reg report." />
-    <option name="LAST_COMMIT_MESSAGE" value="Started generating cu and reg report." />
+    <MESSAGE value="Updated main loader. &#10;&#10;Worked on consolidating the template generater function for the main loader. Finihed HeaderGen, Wells. Continue with samplename." />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated main loader. &#10;&#10;Worked on consolidating the template generater function for the main loader. Finihed HeaderGen, Wells. Continue with samplename." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
