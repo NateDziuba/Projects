@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import os as os
 import csv
+import xlsxwriter
 
 # ---- Global Variable Zone ----
 # Fil path selection storage location
@@ -172,7 +173,7 @@ def select_samples(dframe):
 
     a = snamer
     df = dframe
-    df_index = df.set_index(["Sample", "Dilution Factor"])
+    df_index = df.set_index(["Sample", "Dilution Factor"], drop=True)
     print ("Printing df_index: ", df_index)
     verified_list = []
     output_list = []
@@ -187,10 +188,11 @@ def select_samples(dframe):
             if a[pos1][0] == a[pos2][0]:  # checks it the sample names are the same
                 fold = a[pos1][1] / a[pos2][1]
                 if fold == 0.5 or fold == 2:  # Confirms if the dilution factor fold difference are correct and begins extracting normalized intensity counts.
-                    comparison1 = df_index.loc[(a[pos1][0], a[pos1][1])][1]
+                    comparison1 = df_index.loc[(a[pos1][0], a[pos1][1]), ('Normalized Intensity (Cnt/s)', 'mean')]
+                    print("Printing Comp1: ", comparison1)
                     #The above line of code returns the sample and dilution factor index values, and then the position of the remaining column.
                     #excluding a column value for norm. Int. appears to be syntactic sugar to including a ':'(splice value).
-                    comparison2 = df_index.loc[(a[pos2][0], a[pos2][1])][1]
+                    comparison2 = df_index.loc[(a[pos2][0], a[pos2][1]), ('Normalized Intensity (Cnt/s)', 'mean')]
                     comp_fold = comparison1/comparison2
                     if 1.5 <= comp_fold <= 2.5:  # if norm intensity fold difference is within 2 +/- 25%, append to a new list
                         verified_list.append([a[pos1][0], a[pos1][1], comparison1])
@@ -215,28 +217,30 @@ def cum_reg_report(list, dframe):
     select samples function. Use the sorted data frame from sort_dataframe function."""
 
     
-    foldersave = 'C:/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files'
+    foldersave = 'C:/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/outputExcel.xlsx'
     accepted_values = list
     df_sorted = dframe
-    df_index = df_sorted.set_index(["Sample", "Dilution Factor"], drop=True)
+    df_index = df_sorted.set_index(["Sample", "Dilution Factor"], drop=False)
     dfidx_sort = df_index.sort_index()
     
     for i in range(len(accepted_values)):
         idx1 = accepted_values[i][0] #is sample name
         idx2 = accepted_values[i][1] #is dilution factor
         slct_df = dfidx_sort.loc[(idx1, idx2), :]
-        if slct_df.mean(axis=0)["%PD"] <= 15.0:
+        if slct_df.mean(axis=0, numeric_only=True)["%PD"] <= 15.0:
             #Save the data, the triplicate rows and the descriptives, to an excel sheet 
-            with pd.ExcelWriter(foldersave, engine=xlsxwriter) as writer:
+            with pd.ExcelWriter(foldersave, engine='xlsxwriter', mode='w') as writer:
                 cume = slct_df[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
                                     "Amplitude", "Baseline", "SOS", "%PD",
                                     "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
                                     ]]
-                cume_stat = cume.describe()
+                cume_stat = cume.describe(include=[np.number])
                 cume.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
                 cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
         else:
-            with pd.ExcelWriter(foldersave, engine=xlsxwriter) as writer:
+            with pd.ExcelWriter(foldersave, engine='xlsxwriter', mode='w') as writer:
+                workbook = writer.book
+                worksheet = writer.sheets['DLS Results']
                 cume = slct_df[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
                                     "Amplitude", "Baseline", "SOS", "%PD",
                                     "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
@@ -246,11 +250,14 @@ def cum_reg_report(list, dframe):
                                     "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
                                     "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
                                     ]]
+                cume_stat = cume.describe(include=[np.number])
                 cume.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
                 cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
-    
+                
+                writer.close()
         print(slct_df)
         print(slct_df.describe())
+        
 
 
 def TemplateGenerator():
