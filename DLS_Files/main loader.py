@@ -111,15 +111,30 @@ def sort_dataframe(dframe):
     """Performs an initial sort of the dataframe into the core and required columns."""
     #TODO write an exception block for this range in case the user does not use dilution factors in the template
     print("\n\n Sort Dataframe initiated...\n")
-    df_sorted = dframe[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
-                        "Amplitude", "Baseline", "SOS", "%PD",
+    df_sorted = dframe[["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor", 
+                        "Diameter (nm)", "Amplitude", "Baseline", "SOS", "%PD",
                         "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
                         "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
                         "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
                         "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
                         "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
-                        "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
-                        ]]
+                        "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item",
+                        "Date", "Time Stamp"
+                        ]].replace("--", np.NaN, regex=False).replace("", np.NaN, regex=False)
+    
+    
+    df_sorted[["Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
+    "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
+    "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
+    "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
+    "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)"]]\
+    = df_sorted[["Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
+    "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
+    "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
+    "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
+    "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)"]].astype("float")
+    
+    print("df_sorted :    ", df_sorted.dtypes)
     print("Dataframe has been sorted, displaying: \n", df_sorted)
     return df_sorted
 
@@ -145,7 +160,7 @@ def norm_init(dframe):
                          & (dframe['Amplitude'] >= 0.1) & (dframe['% Acqs Unmarked'] >= 70)]
 
     # Sorted results  by sample, then dilution factor and calculated basic statistic values for the described values
-    df_NI = df_filtered.groupby(['Sample', 'Dilution Factor']).agg(
+    df_NI = df_filtered.groupby(["Lot Number", 'Dilution Factor']).agg(
         {'Normalized Intensity (Cnt/s)': ['size', 'mean', 'std', PRsd]}).reset_index().copy()
 
     # %RSD is set and needs to be at or lower than the provided value
@@ -173,7 +188,7 @@ def select_samples(dframe):
 
     a = snamer
     df = dframe
-    df_index = df.set_index(["Sample", "Dilution Factor"], drop=True)
+    df_index = df.set_index(["Lot Number", "Dilution Factor"], drop=True)
     print ("Printing df_index: ", df_index)
     verified_list = []
     output_list = []
@@ -222,16 +237,25 @@ def cum_reg_report(list, dframe):
     # 'C:/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/outputExcel.xlsx'
 
     for i in range(len(file_path)):
-        if file_path[-i:] == '/':
-            n = i-1
-            foldersave = file_path[:-n] + "DLS_Output"
+        if file_path[-(i+1):len(file_path)-i] == '/':
+            foldersave = file_path[:-i] + "DLS_Output"
             print('File Path if statement passed...')
+            print("Folder Save:   ", foldersave)
             break
     print("printing folder save path", foldersave)
     accepted_values = list
     df_sorted = dframe
-    df_index = df_sorted.set_index(["Sample", "Dilution Factor"], drop=False)
+    df_index = df_sorted.set_index(["Lot Number", "Dilution Factor"], drop=False)
     dfidx_sort = df_index.sort_index()
+    
+    writer = pd.ExcelWriter("DLS_Results_Output_pius.xlsx", engine='xlsxwriter')
+    #workbook = writer.book
+    #worksheet = workbook.sheets
+    
+    empty = pd.DataFrame()
+    empty.to_excel(writer, sheet_name='DLS Results')
+    row_counter = 0
+    
     
     for i in range(len(accepted_values)):
         idx1 = accepted_values[i][0] #is sample name
@@ -239,35 +263,47 @@ def cum_reg_report(list, dframe):
         slct_df = dfidx_sort.loc[(idx1, idx2), :]
         if slct_df.mean(axis=0, numeric_only=True)["%PD"] <= 15.0:
             #Save the data, the triplicate rows and the descriptives, to an excel sheet 
-            with pd.ExcelWriter(foldersave) as writer:
-                cume = slct_df[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
-                                    "Amplitude", "Baseline", "SOS", "%PD",
-                                    "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
-                                    ]]
-                cume_stat = cume.describe(include=[np.number])
-                cume.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
-                cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
+            #with pd.ExcelWriter(foldersave, engine='xlsxwriter') as writer:
+            cume = slct_df[["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
+                                "Amplitude", "Baseline", "SOS", "%PD",
+                                "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item",
+                                "Date", "Time Stamp"
+                                ]]
+            cume.to_excel(writer, sheet_name='DLS Results', startrow = row_counter)
+            row_counter = row_counter + len(cume.index) + 2
+            cume_stat = cume.describe(include=[np.number])
+            
+            cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = row_counter)
+            row_counter = row_counter + len(cume_stat.index) + 3
         else:
-            with pd.ExcelWriter(foldersave) as writer:
-                workbook = writer.book
-                worksheet = writer.sheets['DLS Results']
-                cume = slct_df[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
-                                    "Amplitude", "Baseline", "SOS", "%PD",
-                                    "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
-                                    "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
-                                    "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
-                                    "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
-                                    "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
-                                    "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
-                                    ]]
-                cume_stat = cume.describe(include=[np.number])
-                cume.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
-                cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
-                
-                writer.close()
-        print(slct_df)
-        print(slct_df.describe())
+            
+            #workbook = writer.book
+            #worksheet = writer.sheets['DLS Results']
+            cume = slct_df[["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
+                                "Amplitude", "Baseline", "SOS", "%PD",
+                                "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
+                                "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
+                                "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
+                                "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
+                                "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
+                                "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item",
+                                "Date", "Time Stamp"
+                                ]]
+            print("printing Cume:.... ", cume)
+            
+            cume.to_excel(writer, sheet_name='DLS Results', startrow = row_counter)
+            row_counter = row_counter + len(cume.index) + 2
+            print("\n\n data type", cume.dtypes)
+            
+            cume_stat = cume.describe(include='all') 
+            cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = row_counter, startcol = 1)
+            row_counter = row_counter + len(cume_stat.index) + 3
+            
+            
         
+        #print(slct_df)
+        #print(slct_df.describe())
+    writer.close()
 
 
 def TemplateGenerator():
@@ -277,8 +313,8 @@ def TemplateGenerator():
 def main():
     """ The main function that prompts the user to make a selection of a task they would like to perform."""
     global file_path
-    file_path = "/Users/natedziuba/Library/Mobile Documents/com~apple~CloudDocs/Computer Science/Python/Repos/DLS_Files/DLSTrainingRAW 2.csv"
-
+    #file_path = "/Users/natedziuba/Library/Mobile Documents/com~apple~CloudDocs/Computer Science/Python/Repos/DLS_Files/DLSTrainingRAW 2.csv"
+    file_path = "/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/DLSTrainingRAW 2.csv"
     # Initiation of the prompt.
     print("Welcome to the DLS Python script, please select an option below.\n")
     # Loops to allow the user to select an option, and requires only int.
