@@ -215,9 +215,19 @@ def cum_reg_report(list, dframe):
     that have passed assay acceptance criteria. This list is used to pull cummulant or regularization values and
     generates basic statistics on it.The second arg is the sorted dataframe. Use the verified list from the 
     select samples function. Use the sorted data frame from sort_dataframe function."""
+    global file_path
+    print("printing file path: ", file_path)
+    foldersave = ""
 
-    
-    foldersave = 'C:/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/outputExcel.xlsx'
+    # 'C:/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/outputExcel.xlsx'
+
+    for i in range(len(file_path)):
+        if file_path[-i:] == '/':
+            n = i-1
+            foldersave = file_path[:-n] + "DLS_Output"
+            print('File Path if statement passed...')
+            break
+    print("printing folder save path", foldersave)
     accepted_values = list
     df_sorted = dframe
     df_index = df_sorted.set_index(["Sample", "Dilution Factor"], drop=False)
@@ -229,7 +239,7 @@ def cum_reg_report(list, dframe):
         slct_df = dfidx_sort.loc[(idx1, idx2), :]
         if slct_df.mean(axis=0, numeric_only=True)["%PD"] <= 15.0:
             #Save the data, the triplicate rows and the descriptives, to an excel sheet 
-            with pd.ExcelWriter(foldersave, engine='xlsxwriter', mode='w') as writer:
+            with pd.ExcelWriter(foldersave) as writer:
                 cume = slct_df[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
                                     "Amplitude", "Baseline", "SOS", "%PD",
                                     "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item"
@@ -238,7 +248,7 @@ def cum_reg_report(list, dframe):
                 cume.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
                 cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = writer.sheets['DLS Results'].max_row)
         else:
-            with pd.ExcelWriter(foldersave, engine='xlsxwriter', mode='w') as writer:
+            with pd.ExcelWriter(foldersave) as writer:
                 workbook = writer.book
                 worksheet = writer.sheets['DLS Results']
                 cume = slct_df[["Well", "Sample", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
