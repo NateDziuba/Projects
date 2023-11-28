@@ -111,25 +111,25 @@ class Col_Header:
         self.headings = headings.lower()
         self.heading_list = None
         self.all_headers = self.list_make()
-        if self.headings == "help":
-            self.help()
-        elif self.headings == None:
-            return all_headers
-        if self.headings == "sort":
-            self.numeric_only()
+        #if self.headings == "help":
+            #self.help()
+        #elif self.headings == None:
+            #return self.all_headers
+        #if self.headings == "sort":
+            #self.numeric_only()
 
     def list_make(self):
         self.heading_list = list(self.df)
 
     def numeric_only(self):
-        self.numeric_list = ["Normalized Intensity (Cnt/s)", "Dilution Factor","Amplitude", "Baseline", "SOS",
+        numeric_list = ["Normalized Intensity (Cnt/s)", "Dilution Factor","Amplitude", "Baseline", "SOS",
                              'D10 (nm)', 'D50 (nm)', 'D90 (nm)', 'Span (D90 - D10)/D50',
                              "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs"]
         reg_list = self.reg()
 
-        [self.numeric_list.append(i) for i in reg_list]
+        [numeric_list.append(i) for i in reg_list]
 
-        return self.numeric_list
+        return numeric_list
 
 
 
@@ -147,11 +147,11 @@ class Col_Header:
         return self.cume_list
 
     def num_reg(self):
-        self.reg_list = []
+        reg_list = []
         ranges = ["Range1", "Range2", "Range3", "Range4", "Range5"]
-        self.range_list =[]
-        [self.range_list.append(j) for i in ranges for j in self.heading_list if j.startswith(i) ]
-        [self.reg_list.append(i) for i in range_list]
+        range_list =[]
+        [range_list.append(j) for i in ranges for j in self.heading_list if j.startswith(i) ]
+        [reg_list.append(i) for i in range_list]
 
         return self.reg_list
 
@@ -179,7 +179,7 @@ def sort_dataframe(dframe):
     """Performs an initial sort of the dataframe into the core and required columns."""
     #TODO write an exception block for this range in case the user does not use dilution factors in the template
     print("\n\n Sort Dataframe initiated...\n")
-    main_list = Col_Header(dframe, "sort")
+    main_list = Col_Header(dframe, "sort").numeric_only()
     print("Printing main_list   :   ", main_list )
     #df_sorted = dframe[["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor",
                         #"Diameter (nm)", "Amplitude", "Baseline", "SOS", "%PD",
@@ -192,7 +192,7 @@ def sort_dataframe(dframe):
                         #"Date", "Time Stamp"
                         #]].replace("--", np.NaN, regex=False).replace("", np.NaN, regex=False)
     
-    df_sorted = dframe[main_list].replace("--", np.NaN, regex=Fale).replace("", np.Nan, regex=False)
+    df_sorted = dframe[main_list].replace("--", np.NaN, regex=False).replace("", np.Nan, regex=False)
 
     df_sorted[["Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)", "Range1 %Intensity"
     "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
@@ -384,8 +384,8 @@ def TemplateGenerator():
 def main():
     """ The main function that prompts the user to make a selection of a task they would like to perform."""
     global file_path
-    file_path = "/Users/natedziuba/Library/Mobile Documents/com~apple~CloudDocs/Computer Science/Python/Repos/DLS_Files/DLSTrainingRAW 2.csv"
-    #file_path = "/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/DLSTrainingRAW 2.csv"
+    #file_path = "/Users/natedziuba/Library/Mobile Documents/com~apple~CloudDocs/Computer Science/Python/Repos/DLS_Files/DLSTrainingRAW 2.csv"
+    file_path = "/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/DLSTrainingRAW 2.csv"
     # Initiation of the prompt.
     print("Welcome to the DLS Python script, please select an option below.\n")
     # Loops to allow the user to select an option, and requires only int.
