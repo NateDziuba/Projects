@@ -100,30 +100,101 @@ def directorychange():
 def init_dataframe():
     """Initalizes the data frame that will be used later on in the analysis."""
     global file_path
-    print('\n\n Initializing Dataframe... Using filepath: \n')
-    print(file_path, "\n")
+    print('\n\n Initializing Dataframe... Using filepath: \n', file_path, "\n")
     initdframe = pd.read_csv(file_path, encoding='cp1252')
-    print("Dataframe created and loaded. Displaying full dataframe...\n", initdframe)
+    print("\nDataframe created and loaded. Displaying full dataframe...\n", initdframe)
     return initdframe
+
+class Col_Header:
+    def __init__(self, dframe, headings = None):
+        self.df = dframe
+        self.headings = headings.lower()
+        self.heading_list = None
+        self.all_headers = self.list_make()
+        if self.headings == "help":
+            self.help()
+        elif self.headings == None:
+            return all_headers
+        if self.headings == "sort":
+            self.numeric_only()
+
+    def list_make(self):
+        self.heading_list = list(self.df)
+
+    def numeric_only(self):
+        self.numeric_list = ["Normalized Intensity (Cnt/s)", "Dilution Factor","Amplitude", "Baseline", "SOS",
+                             'D10 (nm)', 'D50 (nm)', 'D90 (nm)', 'Span (D90 - D10)/D50',
+                             "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs"]
+        reg_list = self.reg()
+
+        [self.numeric_list.append(i) for i in reg_list]
+
+        return self.numeric_list
+
+
+
+    def base(self):
+        base_list = ["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor",
+                        "Amplitude", "Baseline", "SOS",  "Number Acqs", "% Acqs Unmarked", "Number Acqs",
+                        "Number Marked Acqs", "Item", "Date", "Time Stamp"]
+        return base_list
+
+    def cume(self):
+        self.cume_list = ["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
+                                "Amplitude", "Baseline", "SOS", "%PD", 'D10 (nm)', 'D50 (nm)', 'D90 (nm)', 'Span (D90 - D10)/D50',
+                                "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item",
+                                "Date", "Time Stamp"]
+        return self.cume_list
+
+    def num_reg(self):
+        self.reg_list = []
+        ranges = ["Range1", "Range2", "Range3", "Range4", "Range5"]
+        self.range_list =[]
+        [self.range_list.append(j) for i in ranges for j in self.heading_list if j.startswith(i) ]
+        [self.reg_list.append(i) for i in range_list]
+
+        return self.reg_list
+
+    def reg(self):
+        reg_list = []
+        ranges = ["Range1", "Range2", "Range3", "Range4", "Range5"]
+        range_list =[]
+        [range_list.append(j) for i in ranges for j in self.heading_list if j.startswith(i) ]
+        base = self.base()
+        [reg_list.append(i) for i in base]
+        [reg_list.append(i) for i in range_list]
+
+        return reg_list
+
+    def help(self):
+        print("First argument is the dataframe.\n The second argument can be:\n "
+              "1. sort\n"
+              "2. cume\n"
+              "3. reg\n"
+              "4. other\n")
+
 
 
 def sort_dataframe(dframe):
     """Performs an initial sort of the dataframe into the core and required columns."""
     #TODO write an exception block for this range in case the user does not use dilution factors in the template
     print("\n\n Sort Dataframe initiated...\n")
-    df_sorted = dframe[["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor", 
-                        "Diameter (nm)", "Amplitude", "Baseline", "SOS", "%PD",
-                        "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
-                        "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
-                        "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
-                        "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
-                        "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
-                        "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item",
-                        "Date", "Time Stamp"
-                        ]].replace("--", np.NaN, regex=False).replace("", np.NaN, regex=False)
+    main_list = Col_Header(dframe, "sort")
+    print("Printing main_list   :   ", main_list )
+    #df_sorted = dframe[["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor",
+                        #"Diameter (nm)", "Amplitude", "Baseline", "SOS", "%PD",
+                        #"Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
+                        #"Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
+                        #"Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
+                        #"Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
+                        #"Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
+                        #"Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item",
+                        #"Date", "Time Stamp"
+                        #]].replace("--", np.NaN, regex=False).replace("", np.NaN, regex=False)
     
-    
-    df_sorted[["Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
+    df_sorted = dframe[main_list].replace("--", np.NaN, regex=Fale).replace("", np.Nan, regex=False)
+
+    df_sorted[["Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)", "Range1 %Intensity"
     "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
     "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
     "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
@@ -313,8 +384,8 @@ def TemplateGenerator():
 def main():
     """ The main function that prompts the user to make a selection of a task they would like to perform."""
     global file_path
-    #file_path = "/Users/natedziuba/Library/Mobile Documents/com~apple~CloudDocs/Computer Science/Python/Repos/DLS_Files/DLSTrainingRAW 2.csv"
-    file_path = "/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/DLSTrainingRAW 2.csv"
+    file_path = "/Users/natedziuba/Library/Mobile Documents/com~apple~CloudDocs/Computer Science/Python/Repos/DLS_Files/DLSTrainingRAW 2.csv"
+    #file_path = "/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/DLSTrainingRAW 2.csv"
     # Initiation of the prompt.
     print("Welcome to the DLS Python script, please select an option below.\n")
     # Loops to allow the user to select an option, and requires only int.
