@@ -5,9 +5,8 @@ from tkinter import filedialog
 from pathlib import Path
 import pandas as pd
 import numpy as np
-import os as os
-import csv
-import xlsxwriter
+import datetime
+
 
 # ---- Global Variable Zone ----
 # Fil path selection storage location
@@ -29,8 +28,8 @@ def main_menu():
         "4 - Print working file-filepath in terminal.\n\n"
     )
 
-#TODO make the Fileset as a class so it can also return the folder to store data in
-def FileSet():
+
+def fileset():
     """Function asks the user for a file path. This filepath is then stored as a global variable for future use."""
     global file_path
 
@@ -44,7 +43,6 @@ def FileSet():
             root.withdraw()
 
             file_path = filedialog.askopenfilename()
-            file_extension = file_path[-3:]
             print("---- File has been selected, analyzing for file type.---- \n")
 
             if Path(file_path).suffix == ".csv":  # Checks if selected file is a csv extension.
@@ -69,7 +67,6 @@ def FileSet():
                 root.withdraw()
 
                 file_path = filedialog.askopenfilename()
-                file_extension = file_path[-3:]
                 print("---- File has been selected, analyzing for file type.---- \n")
 
             if Path(file_path).suffix == ".csv":  # Checks if selected file is a csv extension.
@@ -77,7 +74,7 @@ def FileSet():
                 break
             else:
                 print("----A CSV file was not selected. Please select a csv file for analysis.----\n")
-                request_pause = input("Please press any key to continue or type \"END\" to go to the main menu.\n\n").lower()
+                request_pause = input("Press any key to continue or type \"END\" to go to the main menu.\n\n").lower()
                 if request_pause == "end":
                     break
     return file_path
@@ -91,7 +88,7 @@ def directorychange():
     """Function runs the FileSet function, in case the use goes to data analysis without setting the csv file."""
     global file_path
     if file_path is None:
-        FileSet()
+        fileset()
     else:
         pass
 
@@ -105,18 +102,15 @@ def init_dataframe():
     print("\nDataframe created and loaded. Displaying full dataframe...\n", initdframe)
     return initdframe
 
+
 class Col_Header:
-    def __init__(self, dframe, headings = None):
+    """Class is uesd to standardize the headers utilized in this program. Base headers are used for initial processing
+    and the cume, and reg, num_reg are used for different aspects of reporting depending on the outcome of the analysis.
+    For instance: if %PD is >15% reg headers are used and if PD <15% cume headers are used."""
+    def __init__(self, dframe):
         self.df = dframe
-        self.headings = headings.lower()
         self.heading_list = None
         self.all_headers = self.list_make()
-        #if self.headings == "help":
-            #self.help()
-        #elif self.headings == None:
-            #return self.all_headers
-        #if self.headings == "sort":
-            #self.numeric_only()
 
     def list_make(self):
         self.heading_list = list(self.df)
@@ -127,14 +121,14 @@ class Col_Header:
                              "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs"]
         reg_list = self.reg()
 
-        [numeric_list.append(i) for i in reg_list]
+        [self.numeric_list.append(i) for i in reg_list]
 
-        return numeric_list
-
-
+        return self.numeric_list
 
     def base(self):
-        base_list = ["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor",
+        #TODO add  "Lot Number", back to base when finished.
+        base_list = ["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor", "%PD",
+                     'D10 (nm)', 'D50 (nm)', 'D90 (nm)', 'Span (D90 - D10)/D50', "Diameter (nm)",
                         "Amplitude", "Baseline", "SOS",  "Number Acqs", "% Acqs Unmarked", "Number Acqs",
                         "Number Marked Acqs", "Item", "Date", "Time Stamp"]
         return base_list
@@ -147,11 +141,12 @@ class Col_Header:
         return self.cume_list
 
     def num_reg(self):
-        reg_list = []
+        self.reg_list = ["Baseline", "SOS", "Amplitude","Normalized Intensity (Cnt/s)", "%PD", 'D10 (nm)', 'D50 (nm)',
+                         'D90 (nm)', 'Span (D90 - D10)/D50',"Diameter (nm)"]
         ranges = ["Range1", "Range2", "Range3", "Range4", "Range5"]
         range_list =[]
         [range_list.append(j) for i in ranges for j in self.heading_list if j.startswith(i) ]
-        [reg_list.append(i) for i in range_list]
+        [self.reg_list.append(i) for i in range_list]
 
         return self.reg_list
 
@@ -167,50 +162,33 @@ class Col_Header:
         return reg_list
 
     def help(self):
-        print("First argument is the dataframe.\n The second argument can be:\n "
-              "1. sort\n"
-              "2. cume\n"
-              "3. reg\n"
-              "4. other\n")
-
+        print("Help method...\nThe available methods are:\n"
+              "1. numeric_only\n"
+              "2. reg\n"
+              "3. num_reg\n"
+              "4. cume\n"
+              "5. base")
 
 
 def sort_dataframe(dframe):
     """Performs an initial sort of the dataframe into the core and required columns."""
     #TODO write an exception block for this range in case the user does not use dilution factors in the template
     print("\n\n Sort Dataframe initiated...\n")
-    main_list = Col_Header(dframe, "sort").numeric_only()
-    print("Printing main_list   :   ", main_list )
-    #df_sorted = dframe[["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor",
-                        #"Diameter (nm)", "Amplitude", "Baseline", "SOS", "%PD",
-                        #"Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
-                        #"Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
-                        #"Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
-                        #"Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
-                        #"Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
-                        #"Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item",
-                        #"Date", "Time Stamp"
-                        #]].replace("--", np.NaN, regex=False).replace("", np.NaN, regex=False)
-    
-    df_sorted = dframe[main_list].replace("--", np.NaN, regex=False).replace("", np.Nan, regex=False)
+    main_list = Col_Header(dframe)
+    print("Printing main_list   :   ", main_list.reg())
 
-    df_sorted[["Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)", "Range1 %Intensity"
-    "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
-    "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
-    "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
-    "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)"]]\
-    = df_sorted[["Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
-    "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
-    "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
-    "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
-    "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)"]].astype("float")
+    df_sorted = dframe[main_list.reg()].replace("--", np.NaN, regex=False).replace("", np.NaN, regex=False)
+    df_sorted[["%PD"]] = df_sorted[["%PD"]].replace("Multimodal", 999, regex=False)
+    df_sorted[main_list.num_reg()] = df_sorted[main_list.num_reg()].astype("float")
     
-    print("df_sorted :    ", df_sorted.dtypes)
+    print("df_sorted :    \n", df_sorted.dtypes)
+    print("%pd type:  ", df_sorted["%PD"].dtypes)
     print("Dataframe has been sorted, displaying: \n", df_sorted)
     return df_sorted
 
+
 def filter_parameters():
-    """place holder function that will be used o ask and store filter parameter variables during analysis"""
+    """place holder function that will be used to ask and store filter parameter variables during analysis"""
     #TODO complete this function and a new menu selection for data analysis, probably make into a class.
     baseline_lower = 0.99
     baseline_upper = 1.01
@@ -246,6 +224,7 @@ def norm_init(dframe):
 
     return df_rsd
 
+
 def select_samples(dframe):
     """ This function uses the sorted data frame and the list of selected samples. The list is used to iterate through
     the sorted dataframe and the selected samples are evaluated accordingly. The dataframe that should be used as an
@@ -260,7 +239,7 @@ def select_samples(dframe):
     a = snamer
     df = dframe
     df_index = df.set_index(["Lot Number", "Dilution Factor"], drop=True)
-    print ("Printing df_index: ", df_index)
+    print("Printing df_index: ", df_index)
     verified_list = []
     output_list = []
     list_len = len(a)
@@ -273,14 +252,15 @@ def select_samples(dframe):
         if pos2 < list_len:  # Check to prevent an index error.
             if a[pos1][0] == a[pos2][0]:  # checks it the sample names are the same
                 fold = a[pos1][1] / a[pos2][1]
-                if fold == 0.5 or fold == 2:  # Confirms if the dilution factor fold difference are correct and begins extracting normalized intensity counts.
+                # Confirms if the dilution factor fold difference are correct and extracts normalized intensity counts.
+                if fold == 0.5 or fold == 2:
                     comparison1 = df_index.loc[(a[pos1][0], a[pos1][1]), ('Normalized Intensity (Cnt/s)', 'mean')]
                     print("Printing Comp1: ", comparison1)
-                    #The above line of code returns the sample and dilution factor index values, and then the position of the remaining column.
-                    #excluding a column value for norm. Int. appears to be syntactic sugar to including a ':'(splice value).
+                    # The above line returns the sample and df index values, then the position of the remaining column.
+                    # excluding a col.value for norm. Int. appears to be syntac sugar to including a ':'(splice value)
                     comparison2 = df_index.loc[(a[pos2][0], a[pos2][1]), ('Normalized Intensity (Cnt/s)', 'mean')]
                     comp_fold = comparison1/comparison2
-                    if 1.5 <= comp_fold <= 2.5:  # if norm intensity fold difference is within 2 +/- 25%, append to a new list
+                    if 1.5 <= comp_fold <= 2.5:  # if norm intensity fold dif is within 2 +/- 25%, append to a new list
                         verified_list.append([a[pos1][0], a[pos1][1], comparison1])
                         verified_list.append([a[pos2][0], a[pos2][1], comparison2])
             pos1 += 1
@@ -290,11 +270,11 @@ def select_samples(dframe):
             # A new list is generated without repeats.
             [output_list.append(i) for i in verified_list if i not in output_list]
 
-
     print('\n Printing Output List: ', output_list)
     print("\n Printing initial list: ", a)
-    print("\n Prining verified list: ", verified_list, "\n\n")
+    print("\n Printing verified list: ", verified_list, "\n\n")
     return output_list
+
 
 def cum_reg_report(list, dframe):
     """Function takes a list of lists that contain the sample name, dilution factor, and normalized intensity
@@ -304,8 +284,8 @@ def cum_reg_report(list, dframe):
     global file_path
     print("printing file path: ", file_path)
     foldersave = ""
-
-    # 'C:/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/outputExcel.xlsx'
+    header_list = Col_Header(dframe)
+    excel_report_date = datetime.datetime.now().strftime('DLS_Report_%d%b%y_%H%M.xlsx')
 
     for i in range(len(file_path)):
         if file_path[-(i+1):len(file_path)-i] == '/':
@@ -319,76 +299,214 @@ def cum_reg_report(list, dframe):
     df_index = df_sorted.set_index(["Lot Number", "Dilution Factor"], drop=False)
     dfidx_sort = df_index.sort_index()
     
-    writer = pd.ExcelWriter("DLS_Results_Output_pius.xlsx", engine='xlsxwriter')
-    #workbook = writer.book
-    #worksheet = workbook.sheets
+    writer = pd.ExcelWriter(excel_report_date, engine='xlsxwriter')
     
     empty = pd.DataFrame()
     empty.to_excel(writer, sheet_name='DLS Results')
     row_counter = 0
     
-    
     for i in range(len(accepted_values)):
-        idx1 = accepted_values[i][0] #is sample name
-        idx2 = accepted_values[i][1] #is dilution factor
+        # is sample name
+        idx1 = accepted_values[i][0]
+        # is dilution factor
+        idx2 = accepted_values[i][1]
         slct_df = dfidx_sort.loc[(idx1, idx2), :]
         if slct_df.mean(axis=0, numeric_only=True)["%PD"] <= 15.0:
-            #Save the data, the triplicate rows and the descriptives, to an excel sheet 
-            #with pd.ExcelWriter(foldersave, engine='xlsxwriter') as writer:
-            cume = slct_df[["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
-                                "Amplitude", "Baseline", "SOS", "%PD",
-                                "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item",
-                                "Date", "Time Stamp"
-                                ]]
+            # Save the data, the triplicate rows and the descriptives, to an excel sheet
+            # with pd.ExcelWriter(foldersave, engine='xlsxwriter') as writer:
+            cume = slct_df[header_list.cume()]
             cume.to_excel(writer, sheet_name='DLS Results', startrow = row_counter)
             row_counter = row_counter + len(cume.index) + 2
-            cume_stat = cume.describe(include=[np.number])
+            cume_stat = cume.describe(include='all')
             
-            cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = row_counter)
+            cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = row_counter, startcol=1)
             row_counter = row_counter + len(cume_stat.index) + 3
         else:
-            
-            #workbook = writer.book
-            #worksheet = writer.sheets['DLS Results']
-            cume = slct_df[["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
-                                "Amplitude", "Baseline", "SOS", "%PD",
-                                "Range1 Diameter (I) (nm)", "Range1 %Pd (I)", "Range1 %Number (I)",
-                                "Range2 Diameter (I) (nm)", "Range2 %Pd (I)", "Range2 %Number (I)",
-                                "Range3 Diameter (I) (nm)", "Range3 %Pd (I)", "Range3 %Number (I)",
-                                "Range4 Diameter (I) (nm)", "Range4 %Pd (I)", "Range4 %Number (I)",
-                                "Range5 Diameter (I) (nm)", "Range5 %Pd (I)", "Range5 %Number (I)",
-                                "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item",
-                                "Date", "Time Stamp"
-                                ]]
-            print("printing Cume:.... ", cume)
+            cume = slct_df[header_list.reg()]
+            print("printing Cume:.... ", cume["Lot Number"], "  ", cume["Dilution Factor"])
             
             cume.to_excel(writer, sheet_name='DLS Results', startrow = row_counter)
             row_counter = row_counter + len(cume.index) + 2
-            print("\n\n data type", cume.dtypes)
             
             cume_stat = cume.describe(include='all') 
             cume_stat.to_excel(writer, sheet_name='DLS Results', startrow = row_counter, startcol = 1)
             row_counter = row_counter + len(cume_stat.index) + 3
-            
-            
-        
-        #print(slct_df)
-        #print(slct_df.describe())
+
     writer.close()
 
 
-def TemplateGenerator():
-    print("Template Generator function activated.")
+def template_generate():
+    # main call function to make the template
+    headers = headers_generate()
+    well = wells()
+    ln = lot_number()
+    wells_list = well_list(well, ln)
+    ln_list = lot_number_list(ln, well)
+    dilution = dilutions(ln, well)
+    template_gen(well, ln, wells_list, ln_list, dilution, headers)
+
+
+def headers_generate():  # Generate headers if needed
+    default_headers = ["Well", "Lot Number", "Dilution Factor"]
+    print("The currently defined headers: \n")
+    [print(i) for i in default_headers]
+    print("\n")
+    request = input("Are additional headers required? Answer Yes or No.\n Response: ").lower()
+    template_headers = default_headers
+    if request == "yes":
+        new_headers = [x.strip() for x in list(input("Add headers separated with commas ','.\n Response: ").split(','))]
+        ##TODO added mechanism to append default headers to the template headers list##
+        for i in new_headers:
+            template_headers.append(i)
+    else:
+        print("All necessary headers are present.\n")
+    return template_headers
+
+
+def wells():  # define the number of wells to be used.
+    wells = 384
+    request = input("Default plate size is 384-well, do you wish to change? \n Response: ")
+    if request == 'yes':
+        well_check = False
+        while not well_check:
+            try:
+                well_request = int(input("Choose between: 384 OR 96 wells. \n Response:"))
+                if well_request == 384:
+                    well_check = True
+                    print("Selected well size: ", wells)
+                elif well_request == 96:
+                    wells = well_request
+                    well_check = True
+                    print("Selected well size: ", wells)
+            except:
+                print("Choose between 384 or 96 wells. Input only a number.\n\n")
+    return wells
+
+
+def well_list(well_number, lot_numbers):
+    alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
+    # appending the well number to the well letter and creating a list in well.label variable.
+    wells = well_number
+    well_list = []
+    for i in range(len(lot_numbers)):
+        if wells == 384:  # checking number of columns to assign well count.
+            plate_col = 24
+        elif wells == 96:
+            plate_col = 12
+        for j in range(plate_col):
+            number = str(j + 1)
+            well_list.append(alphabet[i] + number)
+    return well_list
+
+
+def lot_number():
+    lot_numbers = []
+    print("\nCurrent lot numbers in the script: ", lot_numbers)
+    # clear_request = input("\nDo you want to clear the list? Respond with Yes or No. \n Response:  ").lower()
+    # print("\n\n")
+   # if clear_request == "yes":
+        # lot_numbers = []
+    request = [x.strip() for x in list(input("Please input each sample name to be analyzed. 384-well max of 16, "
+                                             "96 well,max of 8."
+                                             "\nSeparate each name with a comma ','. Response:  ").split(','))]
+    [lot_numbers.append(i) for i in request]
+    return lot_numbers
+
+
+def lot_number_list(lot_number_names, wells):
+    number_of_samples = lot_number_names
+    lot_num_list = []
+    plate_col = 0
+    if wells == 384:  # checking number of columns to assign well count.
+        plate_col = 24
+    elif wells == 96:
+        plate_col = 12
+    [lot_num_list.append(number_of_samples[i]) for i in range(len(number_of_samples)) for j in range(plate_col)]
+    return lot_num_list
+
+
+def dilutions(lot_numbers, wells):
+    # Dilutions for number of samples listed in sample name.
+    print("(8) - 2-fold dilutions will be prepared.\n")
+    dilutions = []
+    dilution_list = []
+    dilution_number = None
+    if wells == 384:
+        dilution_number = 8
+    elif wells == 96:
+        dilution_number = 4
+    [dilutions.append(2 ** i) for i in range(dilution_number)]
+    print(dilutions)
+    [dilution_list.append(j) for m in range(len(lot_numbers)) for i in range(3) for j in dilutions]
+    print(dilution_list)
+    return dilution_list
+
+
+def template_gen(wells, ln, well_label, t_samplelist, dilution_list, header_list):
+    # Aggregate list for well, samplename, and dilution factor
+    ##TODO generate mechanism to create a dictionary from the template_headers list and a list of lists
+    template_date = datetime.datetime.now().strftime('DLS_Template_%d%b%y_%H%M')
+    master_list = {'Well': well_label,
+                   'Lot Number': t_samplelist,
+                   'Dilution Factor': dilution_list}
+    for i in header_list:
+        if i not in master_list:
+            master_list[i] = Additional_Solvents(wells, i, ln).header_value()
+    template_import = pd.DataFrame(master_list)
+    template_import.to_csv(template_date, index=False)
+    print("\nExported the template to the folder initially defined.")
+    return template_import
+
+
+class Additional_Solvents():
+    """Class takes inputs:
+    well number as 'wells'
+    newly added header as 'header'
+    list of lot numbers as 'ln'
+
+    This class will take a new header and fill in the value needed for all samples.
+    This class will not allow for variable input or allow for changed to only certain samples (lot numbers)
+    """
+    def __init__(self, wells, header, ln):
+        self.well_number = wells
+        self.new_header = header
+        self.lot_number_list = ln
+        self.default_headers = ["Well", "Lot Number", "Dilution Factor"]
+        self.col_number = None
+        if self.well_number == 384:
+            self.col_number = 24
+        elif self.well_number == 96:
+            self.col_number = 12
+    def header_value(self):
+        # main function to add headers to the additional headers added/requested.
+        print("The header ", self.new_header, " has been added.")
+        header_key_input = input("Please input a single value to define this header, i.e., for solvent input PBS. \n")
+        header_key_list = []
+        [header_key_list.append(header_key_input) for i in range(len(self.lot_number_list)) for j in range(self.col_number)]
+        print("Added new header value: ", self.new_header)
+        return header_key_list
 
 
 def main():
     """ The main function that prompts the user to make a selection of a task they would like to perform."""
     global file_path
-    #file_path = "/Users/natedziuba/Library/Mobile Documents/com~apple~CloudDocs/Computer Science/Python/Repos/DLS_Files/DLSTrainingRAW 2.csv"
-    file_path = "/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/DLSTrainingRAW 2.csv"
+    file_path = ("/Users/natedziuba/Library/Mobile Documents/com~apple~CloudDocs/Computer Science/Python/Repos"
+                 "/DLS_Files/pius 31oct23 test data.csv")
+    # file_path = "/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/DLSTrainingRAW 2.csv"
     # Initiation of the prompt.
     print("Welcome to the DLS Python script, please select an option below.\n")
     # Loops to allow the user to select an option, and requires only int.
+
+    "--- Variable Initiation For Storage While Running ---"
+    # TODO put in a funtion to list and define the adjustment parameters.
+    baseline_lower = 0.99
+    baseline_upper = 1.01
+    sos = 25
+    amplitude_limit = 0.1
+    percent_acqs_unmarked = 70
+    relative_std = 5
+    replicate_size = 3
+
     while True:
         main_menu()
 
@@ -398,7 +516,7 @@ def main():
             print("Your input is incorrect. Make a selection from 0-3.\n")
             continue
         if request == 1:
-            TemplateGenerator()
+            template_generate()
         elif request == 2:
             directorychange()
             df = init_dataframe()
@@ -408,7 +526,7 @@ def main():
             cum_reg_report(verified_list, df_sort)
 
         elif request == 3:
-            FileSet()
+            fileset()
         elif request == 4:
             print("The filepath is: \n", file_path, "\n\n")
         elif request == 0:
