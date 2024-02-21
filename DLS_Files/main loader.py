@@ -127,14 +127,14 @@ class Col_Header:
 
     def base(self):
         #TODO add  "Lot Number", back to base when finished.
-        base_list = ["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor", "%PD",
+        base_list = ["Well", "Sample", "Sample Name", "Normalized Intensity (Cnt/s)", "Dilution Factor", "%PD",
                      'D10 (nm)', 'D50 (nm)', 'D90 (nm)', 'Span (D90 - D10)/D50', "Diameter (nm)",
                         "Amplitude", "Baseline", "SOS",  "Number Acqs", "% Acqs Unmarked", "Number Acqs",
                         "Number Marked Acqs", "Item", "Date", "Time Stamp"]
         return base_list
 
     def cume(self):
-        self.cume_list = ["Well", "Sample", "Lot Number", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
+        self.cume_list = ["Well", "Sample", "Sample Name", "Normalized Intensity (Cnt/s)", "Dilution Factor", "Diameter (nm)",
                                 "Amplitude", "Baseline", "SOS", "%PD", 'D10 (nm)', 'D50 (nm)', 'D90 (nm)', 'Span (D90 - D10)/D50',
                                 "Number Acqs", "% Acqs Unmarked", "Number Acqs", "Number Marked Acqs", "Item",
                                 "Date", "Time Stamp"]
@@ -181,8 +181,8 @@ def sort_dataframe(dframe):
     df_sorted[["%PD"]] = df_sorted[["%PD"]].replace("Multimodal", 999, regex=False)
     df_sorted[main_list.num_reg()] = df_sorted[main_list.num_reg()].astype("float")
     
-    print("df_sorted :    \n", df_sorted.dtypes)
-    print("%pd type:  ", df_sorted["%PD"].dtypes)
+    #print("df_sorted :    \n", df_sorted.dtypes)
+    #print("%pd type:  ", df_sorted["%PD"].dtypes)
     print("Dataframe has been sorted, displaying: \n", df_sorted)
     return df_sorted
 
@@ -209,15 +209,15 @@ def norm_init(dframe):
                          & (dframe['Amplitude'] >= 0.1) & (dframe['% Acqs Unmarked'] >= 70)]
 
     # Sorted results  by sample, then dilution factor and calculated basic statistic values for the described values
-    df_NI = df_filtered.groupby(["Lot Number", 'Dilution Factor']).agg(
+    df_NI = df_filtered.groupby(["Sample Name", 'Dilution Factor']).agg(
         {'Normalized Intensity (Cnt/s)': ['size', 'mean', 'std', PRsd]}).reset_index().copy()
 
     # %RSD is set and needs to be at or lower than the provided value
     # and the size (the number of grouped dilution factors) needs to be 3.
     df_rsd = df_NI[
         (df_NI['Normalized Intensity (Cnt/s)', "PRsd"] <= 20) & (df_NI['Normalized Intensity (Cnt/s)', 'size'] == 3)]
-    #print("df_filtered", df_filtered)
-    #print("df_NI", df_NI)
+    print("df_filtered", df_filtered)
+    print("df_NI", df_NI)
     print("\n\n Filtered and grouped dataset finished, loading df_rsd: ....\n\n", df_rsd)
     #return df_rsd.loc[:, (['Sample', 'Dilution Factor', 'Normalized Intensity (Cnt/s)'], ["", 'mean'])]
 
@@ -238,7 +238,7 @@ def select_samples(dframe):
 
     a = snamer
     df = dframe
-    df_index = df.set_index(["Lot Number", "Dilution Factor"], drop=True)
+    df_index = df.set_index(["Sample Name", "Dilution Factor"], drop=True)
     print("Printing df_index: ", df_index)
     verified_list = []
     output_list = []
@@ -250,7 +250,7 @@ def select_samples(dframe):
     # for loop initiates iteration over list length.
     for i in range(list_len):
         if pos2 < list_len:  # Check to prevent an index error.
-            if a[pos1][0] == a[pos2][0]:  # checks it the sample names are the same
+            if a[pos1][0] == a[pos2][0]:  # checks if the sample names are the same
                 fold = a[pos1][1] / a[pos2][1]
                 # Confirms if the dilution factor fold difference are correct and extracts normalized intensity counts.
                 if fold == 0.5 or fold == 2:
@@ -289,14 +289,14 @@ def cum_reg_report(list, dframe):
 
     for i in range(len(file_path)):
         if file_path[-(i+1):len(file_path)-i] == '/':
-            foldersave = file_path[:-i] + "DLS_Output"
+            foldersave = file_path[:-i]
             print('File Path if statement passed...')
             print("Folder Save:   ", foldersave)
             break
-    print("printing folder save path", foldersave)
+    print("printing folder save path: ", foldersave)
     accepted_values = list
     df_sorted = dframe
-    df_index = df_sorted.set_index(["Lot Number", "Dilution Factor"], drop=False)
+    df_index = df_sorted.set_index(["Sample Name", "Dilution Factor"], drop=False)
     dfidx_sort = df_index.sort_index()
     
     writer = pd.ExcelWriter(excel_report_date, engine='xlsxwriter')
@@ -343,11 +343,12 @@ def template_generate():
     wells_list = well_list(well, ln)
     ln_list = lot_number_list(ln, well)
     dilution = dilutions(ln, well)
-    template_gen(well, ln, wells_list, ln_list, dilution, headers)
+    samp_name = generic_sample_names(ln, well)
+    template_gen(well, ln, wells_list, ln_list, dilution, headers, samp_name)
 
 
 def headers_generate():  # Generate headers if needed
-    default_headers = ["Well", "Lot Number", "Dilution Factor"]
+    default_headers = ["Well", "Sample", "Dilution Factor", "Sample Name"]
     print("The currently defined headers: \n")
     [print(i) for i in default_headers]
     print("\n")
@@ -397,11 +398,11 @@ def well_list(well_number, lot_numbers):
             number = str(j + 1)
             well_list.append(alphabet[i] + number)
     return well_list
-
+    
 
 def lot_number():
     lot_numbers = []
-    print("\nCurrent lot numbers in the script: ", lot_numbers)
+    print("\nCurrent Samples in the script: ", lot_numbers)
     # clear_request = input("\nDo you want to clear the list? Respond with Yes or No. \n Response:  ").lower()
     # print("\n\n")
    # if clear_request == "yes":
@@ -413,8 +414,8 @@ def lot_number():
     return lot_numbers
 
 
-def lot_number_list(lot_number_names, wells):
-    number_of_samples = lot_number_names
+def lot_number_list(sample_number_names, wells):
+    number_of_samples = sample_number_names
     lot_num_list = []
     plate_col = 0
     if wells == 384:  # checking number of columns to assign well count.
@@ -441,14 +442,33 @@ def dilutions(lot_numbers, wells):
     print(dilution_list)
     return dilution_list
 
-
-def template_gen(wells, ln, well_label, t_samplelist, dilution_list, header_list):
+def generic_sample_names(sample_name_list, wells):
+    generic_name_list = ['Sample 1', 'Sample 2', 'Sample 3', 'Sample 4', 'Sample 5',
+                        'Sample 6', 'Sample 7', 'Sample 8', 'Sample 9', 'Sample 10', 
+                        'Sample 11', 'Sample 12', 'Sample 13', 'Sample 14', 'Sample 15',
+                        'Sample 16']
+    
+    number_of_samples = len(sample_name_list)
+    
+    plate_col = 0
+    if wells == 384:  # checking number of columns to assign well count.
+        plate_col = 24
+    elif wells == 96:
+        plate_col = 12
+    generated_sample_names = []
+    
+    [generated_sample_names.append(generic_name_list[i]) for i in range((number_of_samples)) for j in range(plate_col)]
+    print(generated_sample_names)
+    return generated_sample_names
+    
+def template_gen(wells, ln, well_label, t_samplelist, dilution_list, header_list, generic_name_list):
     # Aggregate list for well, samplename, and dilution factor
     ##TODO generate mechanism to create a dictionary from the template_headers list and a list of lists
     template_date = datetime.datetime.now().strftime('DLS_Template_%d%b%y_%H%M')
     master_list = {'Well': well_label,
-                   'Lot Number': t_samplelist,
-                   'Dilution Factor': dilution_list}
+                   'Sample Name': t_samplelist,
+                   'Dilution Factor': dilution_list,
+                   'Sample': generic_name_list}
     for i in header_list:
         if i not in master_list:
             master_list[i] = Additional_Solvents(wells, i, ln).header_value()
@@ -490,9 +510,9 @@ class Additional_Solvents():
 def main():
     """ The main function that prompts the user to make a selection of a task they would like to perform."""
     global file_path
-    file_path = ("/Users/natedziuba/Library/Mobile Documents/com~apple~CloudDocs/Computer Science/Python/Repos"
-                 "/DLS_Files/pius 31oct23 test data.csv")
-    # file_path = "/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files/DLSTrainingRAW 2.csv"
+    #file_path = ("/Users/natedziuba/Library/Mobile Documents/com~apple~CloudDocs/Computer Science/Python/Repos"
+                # "/DLS_Files/pius 31oct23 test data.csv")
+    #file_path = "/Users/NDziuba/OneDrive - FUJIFILM/VAD/VAD/Innovation/Projects/DLS_Files"
     # Initiation of the prompt.
     print("Welcome to the DLS Python script, please select an option below.\n")
     # Loops to allow the user to select an option, and requires only int.
