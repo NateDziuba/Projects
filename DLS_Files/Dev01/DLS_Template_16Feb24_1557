@@ -1,0 +1,169 @@
+Well,Sample Name,Dilution Factor,Sample
+A1,20nm Bead,1,Sample 1
+A2,20nm Bead,2,Sample 1
+A3,20nm Bead,4,Sample 1
+A4,20nm Bead,8,Sample 1
+A5,20nm Bead,16,Sample 1
+A6,20nm Bead,32,Sample 1
+A7,20nm Bead,64,Sample 1
+A8,20nm Bead,128,Sample 1
+A9,20nm Bead,1,Sample 1
+A10,20nm Bead,2,Sample 1
+A11,20nm Bead,4,Sample 1
+A12,20nm Bead,8,Sample 1
+A13,20nm Bead,16,Sample 1
+A14,20nm Bead,32,Sample 1
+A15,20nm Bead,64,Sample 1
+A16,20nm Bead,128,Sample 1
+A17,20nm Bead,1,Sample 1
+A18,20nm Bead,2,Sample 1
+A19,20nm Bead,4,Sample 1
+A20,20nm Bead,8,Sample 1
+A21,20nm Bead,16,Sample 1
+A22,20nm Bead,32,Sample 1
+A23,20nm Bead,64,Sample 1
+A24,20nm Bead,128,Sample 1
+B1,40nm Bead,1,Sample 2
+B2,40nm Bead,2,Sample 2
+B3,40nm Bead,4,Sample 2
+B4,40nm Bead,8,Sample 2
+B5,40nm Bead,16,Sample 2
+B6,40nm Bead,32,Sample 2
+B7,40nm Bead,64,Sample 2
+B8,40nm Bead,128,Sample 2
+B9,40nm Bead,1,Sample 2
+B10,40nm Bead,2,Sample 2
+B11,40nm Bead,4,Sample 2
+B12,40nm Bead,8,Sample 2
+B13,40nm Bead,16,Sample 2
+B14,40nm Bead,32,Sample 2
+B15,40nm Bead,64,Sample 2
+B16,40nm Bead,128,Sample 2
+B17,40nm Bead,1,Sample 2
+B18,40nm Bead,2,Sample 2
+B19,40nm Bead,4,Sample 2
+B20,40nm Bead,8,Sample 2
+B21,40nm Bead,16,Sample 2
+B22,40nm Bead,32,Sample 2
+B23,40nm Bead,64,Sample 2
+B24,40nm Bead,128,Sample 2
+C1,125nm Bead,1,Sample 3
+C2,125nm Bead,2,Sample 3
+C3,125nm Bead,4,Sample 3
+C4,125nm Bead,8,Sample 3
+C5,125nm Bead,16,Sample 3
+C6,125nm Bead,32,Sample 3
+C7,125nm Bead,64,Sample 3
+C8,125nm Bead,128,Sample 3
+C9,125nm Bead,1,Sample 3
+C10,125nm Bead,2,Sample 3
+C11,125nm Bead,4,Sample 3
+C12,125nm Bead,8,Sample 3
+C13,125nm Bead,16,Sample 3
+C14,125nm Bead,32,Sample 3
+C15,125nm Bead,64,Sample 3
+C16,125nm Bead,128,Sample 3
+C17,125nm Bead,1,Sample 3
+C18,125nm Bead,2,Sample 3
+C19,125nm Bead,4,Sample 3
+C20,125nm Bead,8,Sample 3
+C21,125nm Bead,16,Sample 3
+C22,125nm Bead,32,Sample 3
+C23,125nm Bead,64,Sample 3
+C24,125nm Bead,128,Sample 3
+D1,20_40nm Bead,1,Sample 4
+D2,20_40nm Bead,2,Sample 4
+D3,20_40nm Bead,4,Sample 4
+D4,20_40nm Bead,8,Sample 4
+D5,20_40nm Bead,16,Sample 4
+D6,20_40nm Bead,32,Sample 4
+D7,20_40nm Bead,64,Sample 4
+D8,20_40nm Bead,128,Sample 4
+D9,20_40nm Bead,1,Sample 4
+D10,20_40nm Bead,2,Sample 4
+D11,20_40nm Bead,4,Sample 4
+D12,20_40nm Bead,8,Sample 4
+D13,20_40nm Bead,16,Sample 4
+D14,20_40nm Bead,32,Sample 4
+D15,20_40nm Bead,64,Sample 4
+D16,20_40nm Bead,128,Sample 4
+D17,20_40nm Bead,1,Sample 4
+D18,20_40nm Bead,2,Sample 4
+D19,20_40nm Bead,4,Sample 4
+D20,20_40nm Bead,8,Sample 4
+D21,20_40nm Bead,16,Sample 4
+D22,20_40nm Bead,32,Sample 4
+D23,20_40nm Bead,64,Sample 4
+D24,20_40nm Bead,128,Sample 4
+E1,20_125nm Bead,1,Sample 5
+E2,20_125nm Bead,2,Sample 5
+E3,20_125nm Bead,4,Sample 5
+E4,20_125nm Bead,8,Sample 5
+E5,20_125nm Bead,16,Sample 5
+E6,20_125nm Bead,32,Sample 5
+E7,20_125nm Bead,64,Sample 5
+E8,20_125nm Bead,128,Sample 5
+E9,20_125nm Bead,1,Sample 5
+E10,20_125nm Bead,2,Sample 5
+E11,20_125nm Bead,4,Sample 5
+E12,20_125nm Bead,8,Sample 5
+E13,20_125nm Bead,16,Sample 5
+E14,20_125nm Bead,32,Sample 5
+E15,20_125nm Bead,64,Sample 5
+E16,20_125nm Bead,128,Sample 5
+E17,20_125nm Bead,1,Sample 5
+E18,20_125nm Bead,2,Sample 5
+E19,20_125nm Bead,4,Sample 5
+E20,20_125nm Bead,8,Sample 5
+E21,20_125nm Bead,16,Sample 5
+E22,20_125nm Bead,32,Sample 5
+E23,20_125nm Bead,64,Sample 5
+E24,20_125nm Bead,128,Sample 5
+F1,PBS_F,1,Sample 6
+F2,PBS_F,2,Sample 6
+F3,PBS_F,4,Sample 6
+F4,PBS_F,8,Sample 6
+F5,PBS_F,16,Sample 6
+F6,PBS_F,32,Sample 6
+F7,PBS_F,64,Sample 6
+F8,PBS_F,128,Sample 6
+F9,PBS_F,1,Sample 6
+F10,PBS_F,2,Sample 6
+F11,PBS_F,4,Sample 6
+F12,PBS_F,8,Sample 6
+F13,PBS_F,16,Sample 6
+F14,PBS_F,32,Sample 6
+F15,PBS_F,64,Sample 6
+F16,PBS_F,128,Sample 6
+F17,PBS_F,1,Sample 6
+F18,PBS_F,2,Sample 6
+F19,PBS_F,4,Sample 6
+F20,PBS_F,8,Sample 6
+F21,PBS_F,16,Sample 6
+F22,PBS_F,32,Sample 6
+F23,PBS_F,64,Sample 6
+F24,PBS_F,128,Sample 6
+G1,PBS_UnF,1,Sample 7
+G2,PBS_UnF,2,Sample 7
+G3,PBS_UnF,4,Sample 7
+G4,PBS_UnF,8,Sample 7
+G5,PBS_UnF,16,Sample 7
+G6,PBS_UnF,32,Sample 7
+G7,PBS_UnF,64,Sample 7
+G8,PBS_UnF,128,Sample 7
+G9,PBS_UnF,1,Sample 7
+G10,PBS_UnF,2,Sample 7
+G11,PBS_UnF,4,Sample 7
+G12,PBS_UnF,8,Sample 7
+G13,PBS_UnF,16,Sample 7
+G14,PBS_UnF,32,Sample 7
+G15,PBS_UnF,64,Sample 7
+G16,PBS_UnF,128,Sample 7
+G17,PBS_UnF,1,Sample 7
+G18,PBS_UnF,2,Sample 7
+G19,PBS_UnF,4,Sample 7
+G20,PBS_UnF,8,Sample 7
+G21,PBS_UnF,16,Sample 7
+G22,PBS_UnF,32,Sample 7
+G23,PBS_UnF,64,Sample 7
+G24,PBS_UnF,128,Sample 7

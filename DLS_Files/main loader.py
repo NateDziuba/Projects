@@ -6,14 +6,14 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import datetime
+import os
 
 
 # ---- Global Variable Zone ----
-# Fil path selection storage location
-
-
+# File path selection storage location
 # Used in FileSet() function to store the file path of the selected file.
 file_path = None
+folder_path = None
 
 
 def main_menu():
@@ -24,10 +24,42 @@ def main_menu():
         "0 - Terminate Program.\n"
         "1 - Template Generation.\n"
         "2 - Data Analysis.\n"
-        "3 - Select working file. \n"
+        "3 - Select working directory filepath. \n"
         "4 - Print working file-filepath in terminal.\n\n"
     )
 
+def folderset():
+    """Function will ask the user for the working folder directory and then stores it as a global variable.
+    The working file path and folder directory must be manually set prior to using."""
+    global folder_path
+
+    if folder_path is None:
+        while True:
+            print("Please select the working folder directory filepath for data storage.\n")
+            input("Please  input any to continue...\n ")
+            root = tk.Tk()
+            root.withdraw()
+
+            folder_path = filedialog.askdirectory()
+            print("---- The Folder Path has been selected. ----\n")
+            os.chdir(folder_path)
+            print("The working directory folder path is: ", folder_path, "\n\n")
+            break
+    else:
+        print("Is the following working directory correct?: ", folder_path, "\n\n")
+        request_pause = input("Please input Yes or No.\n").lower()
+        #TODO add a check if the input is empty or not. If nothing is input it crashes the program. 
+        if request_pause == "yes":
+            pass
+        else: 
+            request_pause == "no"
+            root = tk.Tk()
+            root.withdraw()
+
+            folder_path = filedialog.askdirectory()
+            print("---- The  working directory folder path has been selected. ----\n")
+            os.chdir(folder_path)
+            print("The folder path is: ", folder_path, "\n\n")
 
 def fileset():
     """Function asks the user for a file path. This filepath is then stored as a global variable for future use."""
@@ -37,7 +69,7 @@ def fileset():
         # While function loops until a csv file is selected or end has been input to go to the main menu.
         while True:
             print("Please select a CSV file for data analysis.\n")
-            input("Please press any key to continue...\n")
+            input("A selection window will popup, hit enter for the window to appear...\n")
 
             root = tk.Tk()
             root.withdraw()
@@ -45,24 +77,25 @@ def fileset():
             file_path = filedialog.askopenfilename()
             print("---- File has been selected, analyzing for file type.---- \n")
 
-            if Path(file_path).suffix == ".csv":  # Checks if selected file is a csv extension.
+            if Path(file_path).suffix == ".csv":  # Checks if selected file is a csv extension incase user selects incorrect file. 
                 print("---File Type is CSV---\n")
                 break
             else:
                 print("A CSV file was not selected. Please select a csv file for analysis.\n")
                 request_pause = input("Please press any key to continue or type end to go to main menu.\n\n").lower()
                 if request_pause == "end":
-                    pass
+                    break
     else:
-        # Needed during analysis. File path selection is run automatically, because users...
+        # Needed during analysis. File path selection is run automatically incase alternative files are analyzed
         while True:
             print("Is this the correct file for data analysis?\n", file_path)
-            request2 = input("Please press enter Yes or No. \n").lower()
+            request2 = input("Please enter Yes or No. \n").lower()
 
             if request2 == "yes":
                 break
 
-            if request2 == "no":
+            else: 
+                request2 == "no"
                 root = tk.Tk()
                 root.withdraw()
 
@@ -79,14 +112,9 @@ def fileset():
                     break
     return file_path
 
-
-# Function determines if the current filepath contains the data of interest, if not it requests
-# a direct filepath from the user to use for analysis.
-
-
 def directorychange():
-    """Function runs the FileSet function, in case the use goes to data analysis without setting the csv file."""
-    global file_path
+    """Function runs the fileset function, in case the use goes to data analysis without setting the csv file."""
+    global filepath_path
     if file_path is None:
         fileset()
     else:
@@ -175,10 +203,13 @@ def sort_dataframe(dframe):
     #TODO write an exception block for this range in case the user does not use dilution factors in the template
     print("\n\n Sort Dataframe initiated...\n")
     main_list = Col_Header(dframe)
-    print("Printing main_list   :   ", main_list.reg())
+    #print("Printing main_list   :   ", main_list.reg())
 
     df_sorted = dframe[main_list.reg()].replace("--", np.NaN, regex=False).replace("", np.NaN, regex=False)
     df_sorted[["%PD"]] = df_sorted[["%PD"]].replace("Multimodal", 999, regex=False)
+    #The %PD list has to be changed to a float otherwise the analysis gets difficult. 
+    #The Dynamics software (where the data originates) uses floats and strings, we want to convert the string 'multimodal'
+    #into a float, so we set that value as a floating number of 999. %PD is not calculated anywhere. 
     df_sorted[main_list.num_reg()] = df_sorted[main_list.num_reg()].astype("float")
     
     #print("df_sorted :    \n", df_sorted.dtypes)
@@ -215,7 +246,7 @@ def norm_init(dframe):
     # %RSD is set and needs to be at or lower than the provided value
     # and the size (the number of grouped dilution factors) needs to be 3.
     df_rsd = df_NI[
-        (df_NI['Normalized Intensity (Cnt/s)', "PRsd"] <= 20) & (df_NI['Normalized Intensity (Cnt/s)', 'size'] == 3)]
+        (df_NI['Normalized Intensity (Cnt/s)', "PRsd"] <= 30) & (df_NI['Normalized Intensity (Cnt/s)', 'size'] >= 3)]
     print("df_filtered", df_filtered)
     print("df_NI", df_NI)
     print("\n\n Filtered and grouped dataset finished, loading df_rsd: ....\n\n", df_rsd)
@@ -228,7 +259,7 @@ def norm_init(dframe):
 def select_samples(dframe):
     """ This function uses the sorted data frame and the list of selected samples. The list is used to iterate through
     the sorted dataframe and the selected samples are evaluated accordingly. The dataframe that should be used as an
-    argument should be the norm int """
+    argument should be from the norm int """
     # Makes a list of lists of sample names and dilution factors that pass the above tests, exports into numpy.
     snamer = []
     num_rsd = dframe.to_numpy()
@@ -247,7 +278,6 @@ def select_samples(dframe):
     pos1 = 0
     pos2 = 1
 
-    # for loop initiates iteration over list length.
     for i in range(list_len):
         if pos2 < list_len:  # Check to prevent an index error.
             if a[pos1][0] == a[pos2][0]:  # checks if the sample names are the same
@@ -255,24 +285,25 @@ def select_samples(dframe):
                 # Confirms if the dilution factor fold difference are correct and extracts normalized intensity counts.
                 if fold == 0.5 or fold == 2:
                     comparison1 = df_index.loc[(a[pos1][0], a[pos1][1]), ('Normalized Intensity (Cnt/s)', 'mean')]
-                    print("Printing Comp1: ", comparison1)
+                    #print("Printing Comp1: ", comparison1)
                     # The above line returns the sample and df index values, then the position of the remaining column.
                     # excluding a col.value for norm. Int. appears to be syntac sugar to including a ':'(splice value)
                     comparison2 = df_index.loc[(a[pos2][0], a[pos2][1]), ('Normalized Intensity (Cnt/s)', 'mean')]
                     comp_fold = comparison1/comparison2
-                    if 1.5 <= comp_fold <= 2.5:  # if norm intensity fold dif is within 2 +/- 25%, append to a new list
+                    if 1.4 <= comp_fold <= 2.6:  # if norm intensity fold dif is within 2 +/- 30%, append to a new list
                         verified_list.append([a[pos1][0], a[pos1][1], comparison1])
                         verified_list.append([a[pos2][0], a[pos2][1], comparison2])
             pos1 += 1
             pos2 += 1
         else:
-            print("\nList scan finished, generating master list.")
+            print("\nList scan finished, generating master list.\n\n")
             # A new list is generated without repeats.
             [output_list.append(i) for i in verified_list if i not in output_list]
 
-    print('\n Printing Output List: ', output_list)
-    print("\n Printing initial list: ", a)
-    print("\n Printing verified list: ", verified_list, "\n\n")
+    #print('\n Printing Output List: ', output_list)
+    #print("\n Printing initial list: ", a)
+    #print("\n Printing verified list: ", verified_list, "\n\n")
+    print("--------------------------------------")
     return output_list
 
 
@@ -464,17 +495,24 @@ def generic_sample_names(sample_name_list, wells):
 def template_gen(wells, ln, well_label, t_samplelist, dilution_list, header_list, generic_name_list):
     # Aggregate list for well, samplename, and dilution factor
     ##TODO generate mechanism to create a dictionary from the template_headers list and a list of lists
+    global folder_path
+    print("The folder path is: ", folder_path, "\n\n")
+    if folder_path == None:
+        folderset()
+    
     template_date = datetime.datetime.now().strftime('DLS_Template_%d%b%y_%H%M')
     master_list = {'Well': well_label,
                    'Sample Name': t_samplelist,
                    'Dilution Factor': dilution_list,
                    'Sample': generic_name_list}
+
     for i in header_list:
         if i not in master_list:
             master_list[i] = Additional_Solvents(wells, i, ln).header_value()
     template_import = pd.DataFrame(master_list)
+
     template_import.to_csv(template_date, index=False)
-    print("\nExported the template to the folder initially defined.")
+    print("\nExported the template to the defined working directory.\n\n")
     return template_import
 
 
@@ -485,7 +523,7 @@ class Additional_Solvents():
     list of lot numbers as 'ln'
 
     This class will take a new header and fill in the value needed for all samples.
-    This class will not allow for variable input or allow for changed to only certain samples (lot numbers)
+    This class will not allow for variable input or allow for changed to only certain samples (sample names)
     """
     def __init__(self, wells, header, ln):
         self.well_number = wells
@@ -546,9 +584,9 @@ def main():
             cum_reg_report(verified_list, df_sort)
 
         elif request == 3:
-            fileset()
+            folderset()
         elif request == 4:
-            print("The filepath is: \n", file_path, "\n\n")
+            print("\nThe filepath is:\n",file_path, "\n\n")
         elif request == 0:
             print("Thank-you for using the DLS python program.\n\n")
             break

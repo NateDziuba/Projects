@@ -1,0 +1,38 @@
+SERIAL DILUTION STEP			Repeat Dispense		Transfer	Serial Dilution
+Volumes:
+volume					25.0 uL			50.0 uL		25.0 uL	
+
+speeds:
+Pre-Wetting		No
+Movement Speeds	1	0
+Aspiration Delay	1s
+Dispense Delay		1s
+Speed Y			10
+Aspirate		No
+Dispense		No
+Speed Z			10
+
+Source Details
+Pipetting Height	4.0 mm 		19.3 mm			14.2 mm			5.5 mm
+Safety Bottom Offset	1.0 mm 		2.0 mm			2.0 mm			0.9 mm
+Tip Travel 		No							Yes
+
+Target Details
+Pipetting Height	4.2 mm		3.3 mm			3.3 mm			4.5 mm
+Safety Bottom Offset	1.0 mm		0.3 mm			0.3 mm			0.3 mm
+										Yes
+Tip Change
+After Step Complete			ASC			AET 			ASC
+
+Mix Source		yes		NO			NO			NO
+Volume			25.0		N/A			N/A			N/A
+Mix cycles 		5		N/A			N/A			N/A
+Mix Pause 		1 sec		N/A			N/A			N/A
+
+Mix Target		NO		NO			NO			YES
+BlowOut			N/A		No			YES			NO
+Mix Cycles		N/A		N/A			5			5
+Mix Pause		N/A		N/A			1 sec			1 sec
+Volume			N/A		N/A			25 uL			12
+
+				**keep mix height the same as target details**
